@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reforma e Ampliação: Casa de Carlos e Bruna 🏡</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS (Excel) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    <!-- Script de Inicialização Rápida de Tema (Evita 'piscar' branco ao recarregar) -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('edifica_theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
+    <style>
+        /* Animações dos Toasts */
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(-16px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes toastOut {
+            from { opacity: 1; transform: translateY(0) scale(1); }
+            to { opacity: 0; transform: translateY(-16px) scale(0.95); }
+        }
+        .toast-enter { animation: toastIn 0.25s ease-out forwards; }
+        .toast-exit { animation: toastOut 0.25s ease-in forwards; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen font-sans transition-colors duration-200 antialiased pb-12 sm:pb-8">
+
+    <!-- Container Flutuante para Toasts -->
+    <div id="toastContainer" class="fixed top-3 left-3 right-3 sm:left-auto sm:right-5 sm:top-5 z-50 flex flex-col gap-2 pointer-events-none max-w-sm mx-auto sm:mx-0 w-auto"></div>
+
+    <!-- Tela de Login (Overlay) -->
+    <div id="loginScreen" class="hidden fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
+        <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
+            <div class="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-indigo-500 blur-3xl"></div>
+            <div class="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-emerald-500 blur-3xl"></div>
+        </div>
+
+        <div class="relative bg-slate-800 text-slate-100 p-6 sm:p-8 rounded-3xl shadow-2xl max-w-md w-full border border-slate-700 space-y-6">
+            <div class="text-center space-y-1">
+                <span class="text-4xl">🏡</span>
+                <h2 class="text-xl sm:text-2xl font-black tracking-tight text-white mt-2">Acesso ao Sistema</h2>
+                <p class="text-xs text-slate-400">Reforma & Ampliação: Casa de Carlos e Bruna</p>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Usuário</label>
+                    <input type="text" id="loginUser" required placeholder="Digite seu usuário..." class="w-full px-3.5 py-3 bg-slate-700/80 border border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Senha</label>
+                    <input type="password" id="loginPass" required placeholder="••••••••" class="w-full px-3.5 py-3 bg-slate-700/80 border border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-white">
+                </div>
+                <div id="loginError" class="hidden text-xs text-red-400 font-bold bg-red-950/40 p-3 rounded-xl border border-red-900/60">
+                    ❌ Usuário ou senha incorretos!
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl transition text-sm shadow-lg shadow-indigo-600/30">
+                    Entrar no Painel 🔑
+                </button>
+            </form>
+            <div class="text-[11px] text-slate-400 text-center bg-slate-700/50 p-2.5 rounded-xl border border-slate-700/60">
+                Visualização rápida: <strong>bruna</strong> / senha <strong>1234</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container Principal do App -->
+    <div id="appContainer" class="hidden">
+        
+        <!-- Overlay de Sincronização Inicial -->
+        <div id="cloudSyncOverlay" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex flex-col justify-center items-center text-white px-4">
+            <div class="bg-slate-800 p-6 rounded-2xl shadow-xl max-w-sm w-full text-center border border-slate-700/50 space-y-4">
+                <div class="flex justify-center">
+                    <div class="animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent"></div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-base text-slate-100">Sincronizando com a Nuvem</h3>
+                    <p class="text-xs text-slate-400 mt-1">Buscando os lançamentos mais recentes para manter seus dispositivos alinhados.</p>
+                </div>
+                <div class="pt-2">
+                    <button onclick="dismissSyncOverlay()" class="w-full bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold py-2.5 rounded-xl transition">
+                        Trabalhar Offline 🔌
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header Responsivo -->
+        <header class="bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 text-white shadow-md py-4 sm:py-6 px-4 md:px-8 border-b border-indigo-900/40">
+            <div class="max-w-7xl mx-auto flex flex-col gap-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-lg sm:text-2xl font-black tracking-tight flex items-center gap-2">
+                            <span>Casa de Carlos e Bruna</span> <span class="text-xl sm:text-2xl">🏡</span>
+                        </h1>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <span class="text-indigo-300 text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded bg-indigo-900/60 border border-indigo-700/40">
+                                Reforma & Ampliação
+                            </span>
+                            <span id="userBadge" class="text-[10px] sm:text-xs bg-slate-800 px-2 py-0.5 rounded text-indigo-200 font-bold border border-slate-700"></span>
+                        </div>
+                    </div>
+
+                    <!-- Botão de Sair -->
+                    <button onclick="logout()" class="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-red-500/20 text-red-300 hover:bg-red-500/30 border border-red-500/30 text-xs font-bold transition flex items-center gap-1">
+                        <span>🚪</span> <span class="hidden sm:inline">Sair</span>
+                    </button>
+                </div>
+                
+                <!-- Barra de Ferramentas / Ações Rápidas no Header -->
+                <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+                    <button id="themeToggleBtn" onclick="toggleTheme()" class="flex-1 sm:flex-initial bg-white/10 hover:bg-white/20 active:bg-white/25 text-xs font-bold px-3 py-2.5 rounded-xl transition text-white whitespace-nowrap text-center">
+                        🌙 Modo Escuro
+                    </button>
+                    <button id="settingsBtn" onclick="toggleSettingsPanel()" class="flex-1 sm:flex-initial bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-xs font-bold px-3.5 py-2.5 rounded-xl transition shadow text-white whitespace-nowrap text-center">
+                        ⚙️ Configurações
+                    </button>
+                    <button onclick="generateShareQr()" class="sm:hidden bg-slate-800 hover:bg-slate-700 text-xs font-bold px-3 py-2.5 rounded-xl border border-slate-700 text-slate-200 whitespace-nowrap">
+                        📱 QR Code
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto p-3 sm:p-5 md:p-8 space-y-5 sm:space-y-6">
+
+            <!-- Painel de Configurações Colapsável -->
+            <div id="settingsPanel" class="hidden bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-5">
+                <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-3">
+                    <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                        ⚙️ Painel de Configurações
+                    </h3>
+                    <button onclick="toggleSettingsPanel()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 hover:text-slate-900 font-bold text-sm">✕</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Orçamento e Nuvem -->
+                    <div class="space-y-4">
+                        <h4 class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Gerais</h4>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Orçamento Planejado (R$)</label>
+                            <input type="number" id="globalBudget" value="60000" onchange="updateBudget(this.value)" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs font-bold text-slate-500 dark:text-slate-400">Google Sheets URL</label>
+                                <span id="cloudStatusBadge" class="text-[10px] font-bold"></span>
+                            </div>
+                            <input type="text" id="sheetsUrl" readonly class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-500 dark:text-slate-400 cursor-not-allowed">
+                        </div>
+
+                        <!-- Abrir no celular -->
+                        <div class="pt-3 border-t border-slate-100 dark:border-slate-700 space-y-2">
+                            <h4 class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Conectar Celular</h4>
+                            <button onclick="generateShareQr()" class="w-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 text-xs font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5">
+                                📱 Gerar QR Code do App
+                            </button>
+                            
+                            <div id="qrShareContainer" class="hidden bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col items-center space-y-2 text-center">
+                                <img id="qrShareImg" src="" alt="QR Code" class="rounded-lg shadow border border-white max-w-[160px]">
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400">Escaneie com a câmera do celular para abrir!</p>
+                                <input type="text" id="qrShareLink" readonly class="w-full text-[10px] px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-center">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gerenciar Categorias -->
+                    <div class="space-y-3">
+                        <h4 class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Categorias de Despesas</h4>
+                        <div class="flex gap-2">
+                            <input type="text" id="newCategoryInput" placeholder="Nova Categoria..." class="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
+                            <button onclick="addCustomCategory()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition">
+                                Adicionar
+                            </button>
+                        </div>
+                        <div id="categoriesSettingsList" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
+                            <!-- Injetado dinamicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Importação / Exportação rápida -->
+            <div id="importExportBox" class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div>
+                    <span class="block text-xs font-bold text-slate-800 dark:text-slate-200">Exportação e Backup (.xlsx)</span>
+                    <span class="text-[11px] text-slate-400">Baixe modelos, importe ou exporte planilhas Excel.</span>
+                </div>
+                <div class="grid grid-cols-2 sm:flex flex-wrap gap-2 w-full sm:w-auto">
+                    <button onclick="downloadTemplate()" class="bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 text-xs font-bold py-2 px-3 rounded-xl border border-indigo-200 dark:border-indigo-800 text-center">
+                        📋 Modelo
+                    </button>
+                    <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 px-3 rounded-xl transition text-center shadow">
+                        📊 Exportar
+                    </button>
+                    <label class="col-span-2 sm:col-span-1 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 text-xs font-bold py-2 px-3 rounded-xl transition cursor-pointer text-center border border-slate-200 dark:border-slate-600">
+                        📥 Importar Excel
+                        <input type="file" id="importFile" class="hidden" accept=".xlsx" onchange="importFromExcel(event)">
+                    </label>
+                </div>
+            </div>
+
+            <!-- Central de Alertas de Vencimento com Botão de Pagamento Direto -->
+            <div id="alertPanel" class="hidden bg-amber-50/90 dark:bg-amber-950/30 border-l-4 border-amber-500 p-3.5 sm:p-4 rounded-r-2xl shadow-sm space-y-2.5">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1.5 text-xs sm:text-sm">
+                        <span>⚠️</span> Contas Próximas do Vencimento
+                    </h3>
+                    <span id="alertsTotalCount" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200"></span>
+                </div>
+                <div id="alertsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs font-medium">
+                    <!-- Preenchido cronologicamente com botão de pagamento -->
+                </div>
+            </div>
+
+            <!-- Painel de Métricas -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Orçamento</span>
+                    <p class="text-base sm:text-xl md:text-2xl font-black text-slate-700 dark:text-slate-100 mt-1 truncate" id="metricBudget">R$ 0,00</p>
+                    <span class="text-[10px] text-slate-400 mt-1">Limite definido</span>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Gasto</span>
+                    <p class="text-base sm:text-xl md:text-2xl font-black text-amber-600 dark:text-amber-400 mt-1 truncate" id="metricSpent">R$ 0,00</p>
+                    <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
+                        <div id="barSpent" class="bg-amber-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Saldo Livre</span>
+                    <p class="text-base sm:text-xl md:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 truncate" id="metricRemaining">R$ 0,00</p>
+                    <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
+                        <div id="barRemaining" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Progresso</span>
+                    <p class="text-base sm:text-xl md:text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-1" id="metricPercent">0%</p>
+                    <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
+                        <div id="barPercent" class="bg-indigo-600 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controle do Contrato Jackson -->
+            <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 dark:border-slate-700 pb-3">
+                    <div>
+                        <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                            🏗️ Jackson (Mão de Obra)
+                        </h3>
+                        <p class="text-[11px] text-slate-400">Teto Contratual: R$ 60.000,00</p>
+                    </div>
+                    <span id="jacksonStatusBadge" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-700">Carregando...</span>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+                        <span class="text-[9px] font-bold uppercase text-slate-400">Teto</span>
+                        <p class="text-xs sm:text-sm md:text-base font-extrabold text-slate-700 dark:text-slate-200 mt-0.5 truncate">R$ 60.000,00</p>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+                        <span class="text-[9px] font-bold uppercase text-slate-400">Total Lançado</span>
+                        <p class="text-xs sm:text-sm md:text-base font-extrabold text-amber-600 mt-0.5 truncate" id="jacksonLaunched">R$ 0,00</p>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+                        <span class="text-[9px] font-bold uppercase text-slate-400">Liquidado</span>
+                        <p class="text-xs sm:text-sm md:text-base font-extrabold text-emerald-600 mt-0.5 truncate" id="jacksonPaid">R$ 0,00</p>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+                        <span class="text-[9px] font-bold uppercase text-slate-400">Saldo Livre</span>
+                        <p class="text-xs sm:text-sm md:text-base font-extrabold text-indigo-600 dark:text-indigo-400 mt-0.5 truncate" id="jacksonRemaining">R$ 0,00</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1 pt-1">
+                    <div class="flex justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                        <span>Consumo do Limite</span>
+                        <span id="jacksonPercent">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-700 h-2 sm:h-2.5 rounded-full overflow-hidden">
+                        <div id="jacksonBar" class="bg-indigo-600 h-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulários e Gráficos -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
+                
+                <!-- Formulário de Despesa -->
+                <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 h-fit" id="formContainer">
+                    <h2 id="formTitle" class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 mb-3 flex items-center gap-2">
+                        📝 Registrar Despesa
+                    </h2>
+                    <form id="expenseForm" onsubmit="addExpense(event)" class="space-y-3.5">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Descrição</label>
+                            <input type="text" id="desc" placeholder="Ex: Cimento, Pintor, Pia..." required class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Valor (R$)</label>
+                                <input type="number" step="0.01" id="val" placeholder="0.00" required class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Vencimento</label>
+                                <input type="date" id="dueDate" required class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Fornecedor / Responsável</label>
+                                <input type="text" id="supplier" placeholder="Ex: Jackson, Leroy..." required class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Categoria</label>
+                                <select id="category" required class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
+                                    <!-- Preenchido dinamicamente -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Observações</label>
+                            <textarea id="observations" rows="2" placeholder="Notas adicionais sobre a compra..." class="w-full px-3.5 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100"></textarea>
+                        </div>
+
+                        <!-- Configurações de Pagamento -->
+                        <div class="bg-slate-50 dark:bg-slate-800/80 p-3 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Status</label>
+                                    <select id="status" required class="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
+                                        <option value="" disabled selected>Selecione...</option>
+                                        <option value="Pago">🟢 Pago (Liquidado)</option>
+                                        <option value="Pendente">🔴 Pendente (A Pagar)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Forma de Pagto</label>
+                                    <select id="payMethod" required onchange="toggleInstallments()" class="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
+                                        <option value="" disabled selected>Selecione...</option>
+                                        <option value="PIX">PIX / Transferência</option>
+                                        <option value="Dinheiro">Dinheiro</option>
+                                        <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                        <option value="Boleto">Boleto Bancário</option>
+                                        <option value="Cheque">Cheque</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center pt-0.5">
+                                <label class="inline-flex items-center cursor-pointer text-xs font-bold uppercase text-slate-600 dark:text-slate-300">
+                                    <input type="checkbox" id="isInstallment" onchange="toggleInstallments()" class="rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500 h-4 w-4 mr-2">
+                                    É compra parcelada?
+                                </label>
+                            </div>
+
+                            <div id="installmentConfig" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-200 dark:border-slate-700">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Qtd Parcelas</label>
+                                    <input type="number" id="installmentsCount" min="2" max="120" value="2" class="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Método</label>
+                                    <select id="installmentMethod" class="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
+                                        <option value="" disabled selected>Selecione...</option>
+                                        <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                        <option value="Boleto">Boleto Bancário</option>
+                                        <option value="Carnê">Carnê/Promissória</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2 pt-1">
+                            <button type="submit" id="submitBtn" class="flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-bold py-3 px-4 rounded-xl transition shadow text-sm">
+                                Salvar no Sistema 💾
+                            </button>
+                            <button type="button" id="cancelEditBtn" onclick="cancelEdit()" class="hidden bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-3 px-4 rounded-xl transition text-sm">
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Gráficos de Custos -->
+                <div id="chartsContainer" class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 lg:col-span-2 flex flex-col justify-between">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div>
+                            <h2 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                                📊 Distribuição Financeira
+                            </h2>
+                            <p class="text-[11px] text-slate-400">Custos totais por segmento</p>
+                        </div>
+                        <div class="flex bg-slate-100 dark:bg-slate-700 p-1 rounded-xl w-full sm:w-auto">
+                            <button id="btnChartCategory" onclick="setChartViewMode('category')" class="flex-1 sm:flex-none px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white shadow transition">
+                                Categorias
+                            </button>
+                            <button id="btnChartSupplier" onclick="setChartViewMode('supplier')" class="flex-1 sm:flex-none px-3 py-1.5 text-xs font-bold rounded-lg bg-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition">
+                                Fornecedores
+                            </button>
+                        </div>
+                    </div>
+                    <div class="relative w-full h-64 sm:h-72 flex justify-center items-center my-auto pt-3">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Extrato de Lançamentos -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+                <div class="p-4 sm:px-6 sm:py-4 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <h2 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                        📋 Extrato de Lançamentos
+                    </h2>
+                    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                        <div class="flex items-center gap-1.5 flex-1 sm:flex-initial">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">Ordem:</span>
+                            <select id="sortSelector" onchange="changeSortMode(this.value)" class="w-full sm:w-auto px-2.5 py-1.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs focus:outline-none text-slate-800 dark:text-slate-100 font-semibold">
+                                <option value="date_asc">🗓️ Vencimento (Próximos)</option>
+                                <option value="date_desc">🗓️ Vencimento (Distantes)</option>
+                                <option value="val_desc">💰 Maior Valor</option>
+                                <option value="val_asc">💰 Menor Valor</option>
+                            </select>
+                        </div>
+                        <button id="clearDataBtn" onclick="clearAllData()" class="text-xs bg-red-50 dark:bg-red-950/40 hover:bg-red-100 text-red-600 dark:text-red-300 px-3 py-1.5 rounded-xl font-bold transition border border-red-200/50">
+                            Limpar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 1. Visualização Mobile: Cards Touch-Friendly -->
+                <div id="expenseMobileList" class="block md:hidden divide-y divide-slate-100 dark:divide-slate-700/60 p-2 space-y-2">
+                    <!-- Cards são injetados aqui -->
+                </div>
+
+                <!-- 2. Visualização Desktop: Tabela Tradicional -->
+                <div class="hidden md:block overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[700px]">
+                        <thead>
+                            <tr class="bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-wider">
+                                <th class="px-4 py-3 font-semibold">Reg.</th>
+                                <th class="px-4 py-3 font-semibold">Vencimento</th>
+                                <th class="px-4 py-3 font-semibold">Descrição</th>
+                                <th class="px-4 py-3 font-semibold">Categoria / Fornecedor</th>
+                                <th class="px-4 py-3 font-semibold text-center">Pagamento</th>
+                                <th class="px-4 py-3 font-semibold text-center">Status</th>
+                                <th class="px-4 py-3 font-semibold text-right">Valor</th>
+                                <th class="px-4 py-3 font-semibold text-center actions-col-header">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenseTableBody" class="divide-y divide-slate-100 dark:divide-slate-700 text-xs">
+                            <!-- Injetado via JS -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="emptyState" class="p-8 sm:p-12 text-center text-slate-400 dark:text-slate-500 hidden">
+                    <span class="text-3xl block mb-2">📭</span>
+                    <p class="text-xs sm:text-sm font-medium">Nenhuma despesa encontrada. Registre um item no formulário acima!</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // URL da API integrada nativamente no código
+        const DEFAULT_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwdQll4FXuyslPmphXgOKgeJCHXHwO6j0xMIZZEy4O0s6c-PvFQAk7RXp-jyA1NY64/exec";
+
+        // Estado Geral
+        let state = {
+            budget: 60000,
+            sheetsUrl: DEFAULT_SHEETS_URL,
+            theme: 'light',
+            categories: {},
+            expenses: [],
+            sortBy: 'date_asc' 
+        };
+
+        let chartInstance = null;
+        let editingId = null; 
+        let chartViewMode = 'category'; 
+
+        // Categorias Padrão
+        const defaultCategories = {
+            "Projetos": "Projetos, Taxas e Legalização",
+            "MatEstrutural": "Materiais Estruturais",
+            "MaoEstrutural": "Mão de Obra (Alvenaria)",
+            "Eletrica": "Instalações Elétricas",
+            "Hidraulica": "Instalações Hidráulicas",
+            "Acabamento": "Acabamentos e Revestimentos",
+            "Pintura": "Pintura",
+            "Mobilia": "Mobiliário e Decoração",
+            "Marcenaria": "Marcenaria e Planejados",
+            "Logistica": "Logística e Serviços Gerais"
+        };
+
+        const chartColors = [
+            'rgba(79, 70, 229, 0.85)',   // Indigo
+            'rgba(245, 158, 11, 0.85)',  // Amber
+            'rgba(16, 185, 129, 0.85)',  // Emerald
+            'rgba(6, 182, 212, 0.85)',   // Cyan
+            'rgba(239, 68, 68, 0.85)',   // Vermelho
+            'rgba(236, 72, 153, 0.85)',  // Rosa
+            'rgba(168, 85, 247, 0.85)',  // Roxo
+            'rgba(14, 165, 233, 0.85)',  // Sky
+            'rgba(139, 92, 246, 0.85)',  // Violeta
+            'rgba(100, 116, 139, 0.85)'  // Slate
+        ];
+
+        // --- SISTEMA ROBUSTO DE TEMA (CLARO / ESCURO) ---
+        function getSavedTheme() {
+            const saved = localStorage.getItem('edifica_theme');
+            if (saved === 'dark' || saved === 'light') return saved;
+            return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+        }
+
+        function applyTheme() {
+            const currentTheme = getSavedTheme();
+            state.theme = currentTheme;
+            const html = document.documentElement;
+            const themeBtn = document.getElementById('themeToggleBtn');
+            
+            if (currentTheme === 'dark') {
+                html.classList.add('dark');
+                if (themeBtn) themeBtn.innerHTML = '☀️ Modo Claro';
+            } else {
+                html.classList.remove('dark');
+                if (themeBtn) themeBtn.innerHTML = '🌙 Modo Escuro';
+            }
+        }
+
+        function toggleTheme() {
+            const current = getSavedTheme();
+            const nextTheme = current === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('edifica_theme', nextTheme);
+            state.theme = nextTheme;
+            applyTheme();
+            
+            if (chartInstance) {
+                chartInstance.options.plugins.legend.labels.color = nextTheme === 'dark' ? '#cbd5e1' : '#475569';
+                chartInstance.data.datasets[0].borderColor = nextTheme === 'dark' ? '#1e293b' : '#ffffff';
+                chartInstance.update();
+            }
+            showToast(`Tema ${nextTheme === 'dark' ? 'Escuro' : 'Claro'} ativado!`, 'info');
+        }
+
+        // --- SISTEMA DE TOAST (NOTIFICAÇÃO VISUAL) ---
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            
+            let bgStyles = "bg-emerald-600 text-white shadow-emerald-700/30";
+            let icon = "✅";
+
+            if (type === 'info') {
+                bgStyles = "bg-indigo-600 text-white shadow-indigo-700/30";
+                icon = "ℹ️";
+            } else if (type === 'warning') {
+                bgStyles = "bg-amber-600 text-white shadow-amber-700/30";
+                icon = "⚠️";
+            } else if (type === 'danger') {
+                bgStyles = "bg-red-600 text-white shadow-red-700/30";
+                icon = "🗑️";
+            }
+
+            toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-xl text-xs sm:text-sm font-bold border border-white/10 ${bgStyles} toast-enter`;
+            toast.innerHTML = `<span>${icon}</span><span class="flex-1">${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('toast-enter');
+                toast.classList.add('toast-exit');
+                setTimeout(() => toast.remove(), 260);
+            }, 3200);
+        }
+
+        // --- AUTENTICAÇÃO ---
+        function checkAuth() {
+            const loggedUser = localStorage.getItem('edifica_logged_user');
+            if (!loggedUser) {
+                document.getElementById('appContainer').classList.add('hidden');
+                document.getElementById('loginScreen').classList.remove('hidden');
+                return false;
+            } else {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('appContainer').classList.remove('hidden');
+                return true;
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('loginUser').value.trim().toLowerCase();
+            const pass = document.getElementById('loginPass').value;
+            const errDiv = document.getElementById('loginError');
+
+            if (user === 'carlos' && pass === 'master') {
+                localStorage.setItem('edifica_logged_user', 'master');
+                errDiv.classList.add('hidden');
+                showToast("Bem-vindo de volta, Carlos!", "info");
+                initAppSession();
+            } else if (user === 'bruna' && pass === '1234') {
+                localStorage.setItem('edifica_logged_user', 'standard');
+                errDiv.classList.add('hidden');
+                showToast("Bem-vinda, Bruna!", "info");
+                initAppSession();
+            } else {
+                errDiv.classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('edifica_logged_user');
+            window.location.reload();
+        }
+
+        // --- INICIALIZAÇÃO DA SESSÃO ---
+        async function initAppSession() {
+            if (!checkAuth()) return;
+
+            const loggedUser = localStorage.getItem('edifica_logged_user');
+            
+            const badge = document.getElementById('userBadge');
+            if (badge) {
+                badge.innerText = loggedUser === 'master' ? 'Carlos (Master)' : 'Bruna (Leitora)';
+            }
+
+            const settingsBtn = document.getElementById('settingsBtn');
+            const importExportBox = document.getElementById('importExportBox');
+            const clearDataBtn = document.getElementById('clearDataBtn');
+            
+            if (loggedUser === 'standard') {
+                if (settingsBtn) settingsBtn.classList.add('hidden');
+                if (importExportBox) importExportBox.classList.add('hidden');
+                if (clearDataBtn) clearDataBtn.classList.add('hidden');
+                document.getElementById('settingsPanel').classList.add('hidden');
+            } else {
+                if (settingsBtn) settingsBtn.classList.remove('hidden');
+                if (importExportBox) importExportBox.classList.remove('hidden');
+                if (clearDataBtn) clearDataBtn.classList.remove('hidden');
+            }
+
+            const saved = localStorage.getItem('edifica_v3_data');
+            if (saved) {
+                state = JSON.parse(saved);
+                state.sheetsUrl = DEFAULT_SHEETS_URL;
+                if (!state.categories || Object.keys(state.categories).length === 0) {
+                    state.categories = defaultCategories;
+                }
+                if (!state.sortBy) state.sortBy = 'date_asc';
+                document.getElementById('globalBudget').value = state.budget;
+            } else {
+                state.categories = defaultCategories;
+                state.sheetsUrl = DEFAULT_SHEETS_URL;
+                state.expenses = []; 
+                state.sortBy = 'date_asc';
+                saveToStorage();
+            }
+            
+            document.getElementById('sheetsUrl').value = state.sheetsUrl;
+            document.getElementById('sortSelector').value = state.sortBy;
+            applyTheme();
+            render();
+
+            if (state.sheetsUrl) {
+                document.getElementById('cloudSyncOverlay').classList.remove('hidden');
+                await loadFromCloud();
+                document.getElementById('cloudSyncOverlay').classList.add('hidden');
+            } else {
+                updateCloudStatusIndicator('disconnected', 'Nuvem desligada');
+            }
+        }
+
+        async function init() {
+            applyTheme();
+            await initAppSession();
+        }
+
+        function dismissSyncOverlay() {
+            document.getElementById('cloudSyncOverlay').classList.add('hidden');
+        }
+
+        function toggleSettingsPanel() {
+            const panel = document.getElementById('settingsPanel');
+            panel.classList.toggle('hidden');
+            if (panel.classList.contains('hidden')) {
+                document.getElementById('qrShareContainer').classList.add('hidden');
+            }
+        }
+
+        function generateShareQr() {
+            const qrContainer = document.getElementById('qrShareContainer');
+            const qrImg = document.getElementById('qrShareImg');
+            const qrShareLink = document.getElementById('qrShareLink');
+            
+            const baseUrl = window.location.origin + window.location.pathname;
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(baseUrl)}`;
+            qrShareLink.value = baseUrl;
+            qrContainer.classList.remove('hidden');
+            
+            const panel = document.getElementById('settingsPanel');
+            if (panel.classList.contains('hidden')) {
+                panel.classList.remove('hidden');
+            }
+            qrContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function renderCategorySettings() {
+            const container = document.getElementById('categoriesSettingsList');
+            container.innerHTML = '';
+            
+            Object.entries(state.categories).forEach(([key, val]) => {
+                const div = document.createElement('div');
+                div.className = "flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 p-2 rounded-xl text-[11px] font-semibold border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200";
+                div.innerHTML = `
+                    <span class="truncate pr-1">${val}</span>
+                    <button onclick="deleteCategory('${key}')" class="text-red-500 hover:text-red-700 font-bold px-1.5 py-0.5 rounded bg-red-50 dark:bg-red-950/30 hover:bg-red-100 transition">
+                        ✕
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        async function addCustomCategory() {
+            const input = document.getElementById('newCategoryInput');
+            const val = input.value.trim();
+            if (!val) return;
+
+            const key = 'cat_' + Date.now();
+            state.categories[key] = val;
+            input.value = '';
+            
+            updateAndSync();
+            showToast(`Categoria "${val}" adicionada!`, 'info');
+        }
+
+        async function deleteCategory(key) {
+            if (confirm("Deseja realmente remover esta categoria?")) {
+                delete state.categories[key];
+                updateAndSync();
+                showToast(`Categoria removida!`, 'warning');
+            }
+        }
+
+        function renderCategorySelect() {
+            const select = document.getElementById('category');
+            select.innerHTML = '<option value="" disabled selected>Selecione uma Categoria...</option>';
+            
+            Object.entries(state.categories).forEach(([key, val]) => {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.innerText = val;
+                select.appendChild(opt);
+            });
+        }
+
+        function setChartViewMode(mode) {
+            chartViewMode = mode;
+            const btnCat = document.getElementById('btnChartCategory');
+            const btnSupp = document.getElementById('btnChartSupplier');
+            
+            if (mode === 'category') {
+                btnCat.className = "flex-1 sm:flex-none px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white shadow transition";
+                btnSupp.className = "flex-1 sm:flex-none px-3 py-1.5 text-xs font-bold rounded-lg bg-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition";
+            } else {
+                btnCat.className = "flex-1 sm:flex-none px-3 py-1.5 text-xs font-bold rounded-lg bg-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition";
+                btnSupp.className = "flex-1 sm:flex-none px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white shadow transition";
+            }
+            render(); 
+        }
+
+        function formatDateBR(dateStr) {
+            if (!dateStr) return '';
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('edifica_v3_data', JSON.stringify(state));
+        }
+
+        function updateAndSync() {
+            saveToStorage();
+            render();
+            if (state.sheetsUrl) {
+                saveToCloud(); 
+            }
+        }
+
+        async function updateBudget(val) {
+            state.budget = parseFloat(val) || 0;
+            updateAndSync();
+            showToast("Orçamento global atualizado!", "info");
+        }
+
+        function toggleInstallments() {
+            const isInstallment = document.getElementById('isInstallment').checked;
+            const configDiv = document.getElementById('installmentConfig');
+            if (isInstallment) {
+                configDiv.classList.remove('hidden');
+                document.getElementById('installmentMethod').setAttribute('required', 'required');
+            } else {
+                configDiv.classList.add('hidden');
+                document.getElementById('installmentMethod').removeAttribute('required');
+            }
+        }
+
+        function changeSortMode(mode) {
+            state.sortBy = mode;
+            updateAndSync();
+        }
+
+        // Marcar como pago com Notificação Visual
+        async function markAsPaid(id) {
+            const item = state.expenses.find(x => x.id === id);
+            if (!item) return;
+            
+            item.status = 'Pago';
+            updateAndSync();
+            showToast(`Pago com sucesso: "${item.desc}"!`, 'success');
+        }
+
+        // Adicionar ou Editar Despesa com Notificação
+        async function addExpense(e) {
+            e.preventDefault();
+
+            const desc = document.getElementById('desc').value;
+            const totalVal = parseFloat(document.getElementById('val').value) || 0;
+            const initialDueDate = document.getElementById('dueDate').value;
+            const supplier = document.getElementById('supplier').value;
+            const category = document.getElementById('category').value;
+            const observations = document.getElementById('observations').value;
+            const status = document.getElementById('status').value;
+            const isInstallment = document.getElementById('isInstallment').checked;
+
+            // Bloqueio Jackson
+            const isJackson = supplier.trim().toLowerCase() === 'jackson';
+            if (isJackson) {
+                const currentJacksonTotal = state.expenses
+                    .filter(item => item.id !== editingId && item.supplier && item.supplier.trim().toLowerCase() === 'jackson')
+                    .reduce((sum, item) => sum + item.val, 0);
+
+                const projectedTotal = currentJacksonTotal + totalVal;
+
+                if (projectedTotal > 60000) {
+                    alert(`❌ Limite do Contrato de Jackson Excedido!\n\nVocê já registrou R$ ${currentJacksonTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})} para o Jackson.\nEste novo lançamento de R$ ${totalVal.toLocaleString('pt-BR', {minimumFractionDigits: 2})} ultrapassa o limite total de R$ 60.000,00.`);
+                    return;
+                }
+            }
+
+            if (editingId !== null) {
+                // Atualização
+                const index = state.expenses.findIndex(x => x.id === editingId);
+                if (index !== -1) {
+                    const originalRegDate = state.expenses[index].regDate; 
+                    
+                    state.expenses[index] = {
+                        id: editingId,
+                        regDate: originalRegDate,
+                        dueDate: initialDueDate,
+                        desc: desc,
+                        val: totalVal,
+                        category: category,
+                        supplier: supplier,
+                        paymentMethod: isInstallment ? document.getElementById('installmentMethod').value : document.getElementById('payMethod').value,
+                        status: status,
+                        installmentText: isInstallment ? (state.expenses[index].installmentText.includes("Parcela") ? state.expenses[index].installmentText : "Parcela Editada") : "À vista",
+                        observations: observations
+                    };
+                }
+                editingId = null;
+                cancelEdit();
+                showToast(`Despesa "${desc}" atualizada com sucesso!`, 'info');
+            } else {
+                // Inserção
+                const regDate = new Date().toISOString().split('T')[0];
+
+                if (isInstallment) {
+                    const count = parseInt(document.getElementById('installmentsCount').value) || 2;
+                    const instMethod = document.getElementById('installmentMethod').value;
+                    const valuePerInstallment = parseFloat((totalVal / count).toFixed(2));
+                    const diff = parseFloat((totalVal - (valuePerInstallment * count)).toFixed(2));
+                    const baseDate = new Date(initialDueDate + 'T12:00:00');
+
+                    for (let i = 1; i <= count; i++) {
+                        const installmentDate = new Date(baseDate);
+                        installmentDate.setMonth(baseDate.getMonth() + (i - 1));
+
+                        const currentVal = (i === count) ? parseFloat((valuePerInstallment + diff).toFixed(2)) : valuePerInstallment;
+
+                        state.expenses.push({
+                            id: Date.now() + i,
+                            regDate: regDate,
+                            dueDate: installmentDate.toISOString().split('T')[0],
+                            desc: `${desc} (${i}/${count})`,
+                            val: currentVal,
+                            category: category,
+                            supplier: supplier,
+                            paymentMethod: instMethod,
+                            status: status,
+                            installmentText: `Parcela ${i}/${count}`,
+                            observations: observations
+                        });
+                    }
+                    showToast(`Compra parcelada registrada (${count} parcelas)!`, 'success');
+                } else {
+                    const payMethod = document.getElementById('payMethod').value;
+                    state.expenses.push({
+                        id: Date.now(),
+                        regDate: regDate,
+                        dueDate: initialDueDate,
+                        desc: desc,
+                        val: totalVal,
+                        category: category,
+                        supplier: supplier,
+                        paymentMethod: payMethod,
+                        status: status,
+                        installmentText: "À vista",
+                        observations: observations
+                    });
+                    showToast(`Despesa "${desc}" registrada com sucesso!`, 'success');
+                }
+            }
+
+            updateAndSync();
+            resetFormToNeutral();
+        }
+
+        function resetFormToNeutral() {
+            document.getElementById('expenseForm').reset();
+            document.getElementById('category').selectedIndex = 0;
+            document.getElementById('status').selectedIndex = 0;
+            document.getElementById('payMethod').selectedIndex = 0;
+            const instMethodSelect = document.getElementById('installmentMethod');
+            if (instMethodSelect) instMethodSelect.selectedIndex = 0;
+            document.getElementById('dueDate').value = "";
+            document.getElementById('isInstallment').checked = false;
+            toggleInstallments();
+        }
+
+        function editExpense(id) {
+            const item = state.expenses.find(x => x.id === id);
+            if (!item) return;
+
+            editingId = id;
+            document.getElementById('formTitle').innerText = "✏️ Editar Lançamento";
+            document.getElementById('submitBtn').innerText = "Atualizar Despesa 💾";
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+
+            document.getElementById('desc').value = item.desc;
+            document.getElementById('val').value = item.val;
+            document.getElementById('supplier').value = item.supplier;
+            document.getElementById('category').value = item.category;
+            document.getElementById('status').value = item.status;
+            document.getElementById('dueDate').value = item.dueDate;
+            document.getElementById('observations').value = item.observations || '';
+
+            const isInstallment = item.installmentText && item.installmentText.includes("Parcela");
+            document.getElementById('isInstallment').checked = isInstallment;
+            toggleInstallments();
+
+            if (isInstallment) {
+                document.getElementById('installmentMethod').value = item.paymentMethod;
+                const matches = item.installmentText.match(/(\d+)\/(\d+)/);
+                if (matches && matches[2]) {
+                    document.getElementById('installmentsCount').value = matches[2];
+                }
+            } else {
+                document.getElementById('payMethod').value = item.paymentMethod;
+            }
+
+            document.getElementById('formContainer').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelEdit() {
+            editingId = null;
+            document.getElementById('formTitle').innerText = "📝 Registrar Despesa";
+            document.getElementById('submitBtn').innerText = "Salvar no Sistema 💾";
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+            resetFormToNeutral();
+        }
+
+        // Excluir com Notificação
+        async function deleteExpense(id) {
+            const item = state.expenses.find(x => x.id === id);
+            const desc = item ? item.desc : 'Registro';
+
+            if (confirm(`Deseja deletar "${desc}" permanentemente?`)) {
+                state.expenses = state.expenses.filter(x => x.id !== id);
+                updateAndSync();
+                showToast(`"${desc}" foi excluído com sucesso!`, 'danger');
+            }
+        }
+
+        async function clearAllData() {
+            if (confirm("Confirmar a exclusão de TODOS os registros locais do sistema?")) {
+                state.expenses = [];
+                updateAndSync();
+                showToast("Todos os registros foram excluídos!", "danger");
+            }
+        }
+
+        function exportToExcel() {
+            const dataToExport = state.expenses.map(item => ({
+                "ID": item.id,
+                "Data Registro": formatDateBR(item.regDate),
+                "Vencimento": formatDateBR(item.dueDate),
+                "Descrição": item.desc,
+                "Categoria": state.categories[item.category] || item.category,
+                "Fornecedor": item.supplier,
+                "Forma Pagamento": item.paymentMethod,
+                "Parcelamento": item.installmentText,
+                "Status": item.status,
+                "Valor (R$)": item.val,
+                "Observações": item.observations || ""
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Lançamentos_Obra");
+            XLSX.writeFile(workbook, "Reforma_Carlos_Bruna.xlsx");
+            showToast("Planilha exportada com sucesso!", "info");
+        }
+
+        function downloadTemplate() {
+            const templateData = [
+                {
+                    "ID": 1,
+                    "Data Registro": "01/07/2026",
+                    "Vencimento": "15/07/2026",
+                    "Descrição": "Exemplo de Compra (Cimento)",
+                    "Categoria": "Materiais Estruturais",
+                    "Fornecedor": "Depósito Central",
+                    "Forma Pagamento": "PIX",
+                    "Parcelamento": "À vista",
+                    "Status": "Pago",
+                    "Valor (R$)": 150.00,
+                    "Observações": "Compra inicial"
+                }
+            ];
+
+            const worksheet = XLSX.utils.json_to_sheet(templateData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Modelo_Lançamentos");
+            XLSX.writeFile(workbook, "Modelo_Importacao_Reforma.xlsx");
+        }
+
+        async function importFromExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+                    const mappedExpenses = jsonData.map((row, index) => {
+                        function parseExcelDate(val) {
+                            if (!val) return new Date().toISOString().split('T')[0];
+                            if (typeof val === 'number') {
+                                const date = new Date((val - 25569) * 86400 * 1000);
+                                return date.toISOString().split('T')[0];
+                            }
+                            const parts = String(val).split('/');
+                            if (parts.length === 3) {
+                                return `${parts[2]}-${parts[1]}-${parts[0]}`;
+                            }
+                            return String(val);
+                        }
+
+                        let categoryKey = null;
+                        const rowCat = (row["Categoria"] || "Outros").trim();
+                        for (const [key, value] of Object.entries(state.categories)) {
+                            if (rowCat === value) {
+                                categoryKey = key;
+                                break;
+                            }
+                        }
+
+                        if (!categoryKey) {
+                            categoryKey = 'cat_import_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+                            state.categories[categoryKey] = rowCat;
+                        }
+
+                        return {
+                            id: parseInt(row["ID"]) || (Date.now() + index),
+                            regDate: parseExcelDate(row["Data Registro"]),
+                            dueDate: parseExcelDate(row["Vencimento"]),
+                            desc: row["Descrição"] || "Importado",
+                            val: parseFloat(row["Valor (R$)"]) || 0,
+                            category: categoryKey,
+                            supplier: row["Fornecedor"] || "N/A",
+                            paymentMethod: row["Forma Pagamento"] || "PIX",
+                            status: row["Status"] === "Pago" ? "Pago" : "Pendente",
+                            installmentText: row["Parcelamento"] || "À vista",
+                            observations: row["Observações"] || ""
+                        };
+                    });
+
+                    if (mappedExpenses.length > 0) {
+                        state.expenses = mappedExpenses;
+                        updateAndSync();
+                        showToast(`${mappedExpenses.length} registros importados!`, "success");
+                    } else {
+                        alert("Estrutura não reconhecida na planilha.");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Erro ao processar planilha.");
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // ================= CONEXÃO GOOGLE SHEETS =================
+        async function loadFromCloud() {
+            const url = state.sheetsUrl ? state.sheetsUrl.trim() : '';
+            if (!url) return;
+
+            updateCloudStatusIndicator('loading', 'Sincronizando...');
+            try {
+                const response = await fetch(url, { method: 'GET', redirect: 'follow' });
+                if (!response.ok) throw new Error('Falha de conexão.');
+
+                const cloudState = await response.json();
+                if (cloudState && typeof cloudState === 'object' && Array.isArray(cloudState.expenses)) {
+                    // Mantém o tema configurado localmente no aparelho
+                    const currentLocalTheme = getSavedTheme();
+                    state = cloudState;
+                    state.theme = currentLocalTheme;
+                    if (!state.sortBy) state.sortBy = 'date_asc';
+                    saveToStorage();
+                    applyTheme();
+                    render();
+                    updateCloudStatusIndicator('success', 'Conectado');
+                } else {
+                    updateCloudStatusIndicator('empty', 'Nuvem Vazia');
+                }
+            } catch (error) {
+                console.error("Erro no download automático:", error);
+                updateCloudStatusIndicator('error', 'Sem conexão');
+            }
+        }
+
+        async function saveToCloud() {
+            const url = state.sheetsUrl ? state.sheetsUrl.trim() : '';
+            if (!url) return;
+
+            updateCloudStatusIndicator('loading', 'Salvando...');
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    redirect: 'follow',
+                    body: JSON.stringify(state)
+                });
+
+                if (!response.ok) throw new Error('Falha no envio.');
+                const result = await response.json();
+                if (result && result.status === 'success') {
+                    updateCloudStatusIndicator('success', 'Nuvem Atualizada');
+                }
+            } catch (error) {
+                console.error("Erro no envio automático:", error);
+                updateCloudStatusIndicator('error', 'Erro ao salvar');
+            }
+        }
+
+        function updateCloudStatusIndicator(status, text) {
+            const badge = document.getElementById('cloudStatusBadge');
+            if (!badge) return;
+
+            badge.innerText = text || '';
+
+            switch (status) {
+                case 'loading':
+                    badge.className = "text-amber-500 font-bold uppercase text-[10px] animate-pulse flex items-center gap-1";
+                    badge.innerHTML = "⏳ " + badge.innerText;
+                    break;
+                case 'success':
+                    badge.className = "text-emerald-600 dark:text-emerald-400 font-bold uppercase text-[10px] flex items-center gap-1";
+                    badge.innerHTML = "☁️ " + badge.innerText;
+                    break;
+                case 'error':
+                    badge.className = "text-red-500 font-bold uppercase text-[10px] flex items-center gap-1";
+                    badge.innerHTML = "⚠️ " + badge.innerText;
+                    break;
+                case 'disconnected':
+                    badge.className = "text-slate-400 font-bold uppercase text-[10px] flex items-center gap-1";
+                    badge.innerHTML = "💤 " + badge.innerText;
+                    break;
+                case 'empty':
+                    badge.className = "text-blue-500 font-bold uppercase text-[10px] flex items-center gap-1";
+                    badge.innerHTML = "ℹ️ " + badge.innerText;
+                    break;
+            }
+        }
+
+        function formatCurrency(val) {
+            return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function updateJacksonContract() {
+            const jacksonExpenses = state.expenses.filter(e => e.supplier && e.supplier.trim().toLowerCase() === 'jackson');
+            const totalJacksonLaunched = jacksonExpenses.reduce((sum, e) => sum + e.val, 0);
+            const totalJacksonPaid = jacksonExpenses.filter(e => e.status === 'Pago').reduce((sum, e) => sum + e.val, 0);
+            const contractLimit = 60000;
+            const jacksonRemaining = contractLimit - totalJacksonLaunched;
+            const usePercentage = Math.min((totalJacksonLaunched / contractLimit) * 100, 100);
+
+            document.getElementById('jacksonLaunched').innerText = formatCurrency(totalJacksonLaunched);
+            document.getElementById('jacksonPaid').innerText = formatCurrency(totalJacksonPaid);
+            
+            const remainingEl = document.getElementById('jacksonRemaining');
+            remainingEl.innerText = formatCurrency(jacksonRemaining);
+            
+            if (jacksonRemaining < 0) {
+                remainingEl.className = "text-xs sm:text-sm md:text-base font-extrabold text-red-600 mt-0.5 animate-pulse truncate";
+            } else {
+                remainingEl.className = "text-xs sm:text-sm md:text-base font-extrabold text-indigo-600 dark:text-indigo-400 mt-0.5 truncate";
+            }
+
+            document.getElementById('jacksonPercent').innerText = `${((totalJacksonLaunched / contractLimit) * 100).toFixed(1)}%`;
+            
+            const progressBar = document.getElementById('jacksonBar');
+            progressBar.style.width = `${usePercentage}%`;
+            
+            if (usePercentage >= 100) {
+                progressBar.className = "bg-red-600 h-full transition-all duration-300";
+            } else if (usePercentage >= 85) {
+                progressBar.className = "bg-amber-500 h-full transition-all duration-300";
+            } else {
+                progressBar.className = "bg-indigo-600 h-full transition-all duration-300";
+            }
+
+            const badge = document.getElementById('jacksonStatusBadge');
+            if (totalJacksonLaunched === 0) {
+                badge.innerText = "Sem Lançamentos";
+                badge.className = "text-xs font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500";
+            } else if (totalJacksonLaunched > contractLimit) {
+                badge.innerText = "EXCEDIDO ⚠️";
+                badge.className = "text-xs font-bold px-3 py-1 rounded-full bg-red-100 dark:bg-red-950/50 text-red-700 animate-pulse";
+            } else if (totalJacksonLaunched === contractLimit) {
+                badge.innerText = "Esgotado 🛡️";
+                badge.className = "text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700";
+            } else {
+                badge.innerText = "Em Andamento";
+                badge.className = "text-xs font-bold px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300";
+            }
+        }
+
+        // --- RENDER COMPLETO (DESKTOP E MOBILE CARDS) ---
+        function render() {
+            const loggedUser = localStorage.getItem('edifica_logged_user');
+            const isMaster = loggedUser === 'master';
+
+            renderCategorySelect();
+            renderCategorySettings();
+
+            const formContainer = document.getElementById('formContainer');
+            const chartsContainer = document.getElementById('chartsContainer');
+            
+            if (!isMaster) {
+                if (formContainer) formContainer.classList.add('hidden');
+                if (chartsContainer) {
+                    chartsContainer.className = "bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 lg:col-span-3 flex flex-col justify-between";
+                }
+            } else {
+                if (formContainer) formContainer.classList.remove('hidden');
+                if (chartsContainer) {
+                    chartsContainer.className = "bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 lg:col-span-2 flex flex-col justify-between";
+                }
+            }
+
+            const actionsHeader = document.querySelector('.actions-col-header');
+            if (actionsHeader) {
+                if (!isMaster) actionsHeader.classList.add('hidden');
+                else actionsHeader.classList.remove('hidden');
+            }
+
+            document.getElementById('sortSelector').value = state.sortBy || 'date_asc';
+
+            const tbody = document.getElementById('expenseTableBody');
+            const mobileList = document.getElementById('expenseMobileList');
+            
+            let totalSpent = 0;
+            const categoryTotals = {};
+            Object.keys(state.categories).forEach(key => { categoryTotals[key] = 0; });
+            const supplierTotals = {};
+
+            // Ordenação
+            const sortedExpenses = [...state.expenses];
+            const currentSort = state.sortBy || 'date_asc';
+
+            if (currentSort === 'date_asc') {
+                sortedExpenses.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+            } else if (currentSort === 'date_desc') {
+                sortedExpenses.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
+            } else if (currentSort === 'val_desc') {
+                sortedExpenses.sort((a, b) => b.val - a.val);
+            } else if (currentSort === 'val_asc') {
+                sortedExpenses.sort((a, b) => a.val - b.val);
+            }
+
+            let rowsHtml = '';
+            let cardsHtml = '';
+
+            sortedExpenses.forEach(item => {
+                totalSpent += item.val;
+                
+                if (categoryTotals[item.category] !== undefined) {
+                    categoryTotals[item.category] += item.val;
+                } else {
+                    categoryTotals[item.category] = (categoryTotals[item.category] || 0) + item.val;
+                }
+
+                const suppName = item.supplier ? item.supplier.trim() : "Outros";
+                supplierTotals[suppName] = (supplierTotals[suppName] || 0) + item.val;
+
+                const isPaid = item.status === 'Pago';
+                const statusBadge = isPaid 
+                    ? '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300">🟢 Pago</span>'
+                    : '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-100 dark:bg-red-950/50 text-red-800 dark:text-red-300">🔴 Pendente</span>';
+
+                const obsDiv = item.observations 
+                    ? `<div class="text-slate-500 dark:text-slate-400 text-[10px] mt-1 italic border-l-2 border-slate-300 dark:border-slate-600 pl-1.5">${item.observations}</div>` 
+                    : '';
+
+                // Ações Desktop
+                const payBtnDesktop = (isMaster && !isPaid) ? `
+                    <button onclick="markAsPaid(${item.id})" class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 font-bold bg-emerald-50 dark:bg-emerald-950/40 px-2 py-1 rounded transition" title="Marcar como Pago">
+                        Pagar ✔️
+                    </button>
+                ` : '';
+
+                const actionsCell = isMaster ? `
+                    <td class="px-4 py-3 text-center space-x-1 whitespace-nowrap">
+                        ${payBtnDesktop}
+                        <button onclick="editExpense(${item.id})" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 font-bold bg-indigo-50 dark:bg-indigo-950/30 px-2 py-1 rounded transition">
+                            Editar
+                        </button>
+                        <button onclick="deleteExpense(${item.id})" class="text-red-500 hover:text-red-700 font-bold bg-red-50 dark:bg-red-950/30 px-2 py-1 rounded transition">
+                            Excluir
+                        </button>
+                    </td>
+                ` : '';
+
+                // 1. Linha da Tabela (Desktop)
+                rowsHtml += `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition border-b border-slate-100 dark:border-slate-700">
+                        <td class="px-4 py-3 text-slate-400 font-medium whitespace-nowrap">
+                            ${formatDateBR(item.regDate)}
+                        </td>
+                        <td class="px-4 py-3 font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap">
+                            ${formatDateBR(item.dueDate)}
+                        </td>
+                        <td class="px-4 py-3 min-w-[150px]">
+                            <div class="font-bold text-slate-800 dark:text-slate-200">${item.desc}</div>
+                            <div class="text-slate-400 text-[10px]">${item.installmentText || 'À vista'}</div>
+                            ${obsDiv}
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="text-slate-700 dark:text-slate-300 font-medium">${state.categories[item.category] || item.category}</div>
+                            <div class="text-slate-400 text-[10px]">Resp: ${item.supplier}</div>
+                        </td>
+                        <td class="px-4 py-3 text-center font-semibold text-slate-600 dark:text-slate-300">
+                            ${item.paymentMethod}
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            ${statusBadge}
+                        </td>
+                        <td class="px-4 py-3 text-right font-bold text-slate-800 dark:text-slate-200">${formatCurrency(item.val)}</td>
+                        ${actionsCell}
+                    </tr>
+                `;
+
+                // 2. Card Mobile Touch-Friendly
+                const payBtnMobile = (isMaster && !isPaid) ? `
+                    <button onclick="markAsPaid(${item.id})" class="flex-1 py-2 px-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 shadow-sm">
+                        <span>✔️</span> Pagar
+                    </button>
+                ` : '';
+
+                const actionsMobile = isMaster ? `
+                    <div class="flex items-center gap-1.5 pt-2.5 border-t border-slate-100 dark:border-slate-700/70">
+                        ${payBtnMobile}
+                        <button onclick="editExpense(${item.id})" class="flex-1 py-2 px-2 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 rounded-xl text-xs font-bold transition text-center">
+                            ✏️ Editar
+                        </button>
+                        <button onclick="deleteExpense(${item.id})" class="py-2 px-3 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300 border border-red-200 dark:border-red-900 rounded-xl text-xs font-bold transition text-center">
+                            🗑️
+                        </button>
+                    </div>
+                ` : '';
+
+                cardsHtml += `
+                    <div class="bg-white dark:bg-slate-800/90 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm space-y-2.5">
+                        <div class="flex justify-between items-start gap-2">
+                            <div>
+                                <h3 class="font-extrabold text-sm text-slate-800 dark:text-slate-100 leading-tight">${item.desc}</h3>
+                                <p class="text-[11px] text-slate-400 mt-0.5">Resp: <strong class="text-slate-600 dark:text-slate-300">${item.supplier}</strong> • ${state.categories[item.category] || item.category}</p>
+                            </div>
+                            <div class="text-right whitespace-nowrap">
+                                <span class="text-sm font-black text-slate-900 dark:text-white block">${formatCurrency(item.val)}</span>
+                                <div class="mt-1">${statusBadge}</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between text-[11px] bg-slate-50 dark:bg-slate-900/60 p-2 rounded-xl border border-slate-100 dark:border-slate-700">
+                            <div>
+                                <span class="text-slate-400 block text-[9px] uppercase font-bold">Vencimento</span>
+                                <span class="font-bold text-slate-700 dark:text-slate-300">${formatDateBR(item.dueDate)}</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-slate-400 block text-[9px] uppercase font-bold">Pagamento</span>
+                                <span class="font-medium text-slate-600 dark:text-slate-300">${item.paymentMethod} (${item.installmentText || 'À vista'})</span>
+                            </div>
+                        </div>
+
+                        ${obsDiv}
+                        ${actionsMobile}
+                    </div>
+                `;
+            });
+
+            tbody.innerHTML = rowsHtml;
+            mobileList.innerHTML = cardsHtml;
+
+            // Métricas
+            const remaining = state.budget - totalSpent;
+            const percentSpent = state.budget > 0 ? (totalSpent / state.budget) * 100 : 0;
+
+            document.getElementById('metricBudget').innerText = formatCurrency(state.budget);
+            document.getElementById('metricSpent').innerText = formatCurrency(totalSpent);
+            
+            const remainingEl = document.getElementById('metricRemaining');
+            remainingEl.innerText = formatCurrency(remaining);
+            if (remaining < 0) {
+                remainingEl.className = "text-base sm:text-xl md:text-2xl font-black text-red-600 mt-1 truncate";
+            } else {
+                remainingEl.className = "text-base sm:text-xl md:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 truncate";
+            }
+
+            document.getElementById('metricPercent').innerText = `${percentSpent.toFixed(1)}%`;
+            document.getElementById('barSpent').style.width = `${Math.min(percentSpent, 100)}%`;
+            document.getElementById('barRemaining').style.width = `${Math.max(0, Math.min(100 - percentSpent, 100))}%`;
+            document.getElementById('barPercent').style.width = `${Math.min(percentSpent, 100)}%`;
+
+            if (state.expenses.length === 0) {
+                document.getElementById('emptyState').classList.remove('hidden');
+            } else {
+                document.getElementById('emptyState').classList.add('hidden');
+            }
+
+            processAlerts();
+            renderChart(categoryTotals, supplierTotals);
+            updateJacksonContract();
+        }
+
+        // --- CENTRAL DE ALERTAS DE VENCIMENTO COM BOTÃO DE PAGAMENTO ---
+        function processAlerts() {
+            const container = document.getElementById('alertsContainer');
+            const panel = document.getElementById('alertPanel');
+            const totalCountBadge = document.getElementById('alertsTotalCount');
+            const loggedUser = localStorage.getItem('edifica_logged_user');
+            const isMaster = loggedUser === 'master';
+
+            container.innerHTML = '';
+
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            // Filtra pendências vencidas ou que vencem nos próximos 15 dias
+            const pendingItems = state.expenses
+                .filter(item => item.status === 'Pendente')
+                .map(item => {
+                    const dueDate = new Date(item.dueDate + 'T00:00:00');
+                    const timeDiff = dueDate - today;
+                    const diffDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                    return { ...item, diffDays, dueDateObj: dueDate };
+                })
+                .filter(item => item.diffDays <= 15);
+
+            // Ordena cronologicamente: do mais urgente/atrasado ao mais distante
+            pendingItems.sort((a, b) => a.dueDateObj - b.dueDateObj);
+
+            let alertsHtml = '';
+
+            pendingItems.forEach(item => {
+                let alertMessage = "";
+                let urgencyStyle = "";
+
+                if (item.diffDays < 0) {
+                    alertMessage = `Atrasado há ${Math.abs(item.diffDays)} dia(s)!`;
+                    urgencyStyle = "bg-red-100 dark:bg-red-950/60 border border-red-300 dark:border-red-800 text-red-900 dark:text-red-200 animate-pulse";
+                } else if (item.diffDays === 0) {
+                    alertMessage = "Vence Hoje!";
+                    urgencyStyle = "bg-red-100 dark:bg-red-950/50 border border-red-300 dark:border-red-800 text-red-900 dark:text-red-200";
+                } else if (item.diffDays === 1) {
+                    alertMessage = "Vence Amanhã!";
+                    urgencyStyle = "bg-orange-100 dark:bg-orange-950/50 border border-orange-300 dark:border-orange-800 text-orange-900 dark:text-orange-200";
+                } else if (item.diffDays > 1 && item.diffDays <= 7) {
+                    alertMessage = `Vence em ${item.diffDays} dias`;
+                    urgencyStyle = "bg-amber-100 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200";
+                } else {
+                    alertMessage = `Vence em ${item.diffDays} dias`;
+                    urgencyStyle = "bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-900/50 text-slate-800 dark:text-slate-300";
+                }
+
+                // Botão de Pagar direto no Card de Alerta
+                const payButtonInAlert = isMaster ? `
+                    <button onclick="markAsPaid(${item.id})" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold rounded-lg text-[10px] shadow transition flex items-center gap-1 cursor-pointer">
+                        <span>✔️</span> Pagar
+                    </button>
+                ` : '';
+
+                alertsHtml += `
+                    <div class="p-3 rounded-xl flex flex-col justify-between ${urgencyStyle}">
+                        <div>
+                            <span class="font-black block text-[9px] uppercase tracking-wider">${alertMessage}</span>
+                            <span class="font-bold text-xs block truncate mt-0.5">${item.desc}</span>
+                            <span class="block text-[10px] opacity-80 mt-0.5 truncate font-medium">Resp: ${item.supplier || 'N/A'}</span>
+                        </div>
+                        <div class="mt-2.5 flex items-center justify-between gap-2 border-t border-current/15 pt-1.5">
+                            <div>
+                                <span class="font-black block text-[11px] leading-tight">${formatCurrency(item.val)}</span>
+                                <span class="text-[9px] opacity-80 block">${formatDateBR(item.dueDate)}</span>
+                            </div>
+                            ${payButtonInAlert}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = alertsHtml;
+
+            if (pendingItems.length > 0) {
+                totalCountBadge.innerText = `${pendingItems.length} conta(s)`;
+                panel.classList.remove('hidden');
+            } else {
+                panel.classList.add('hidden');
+            }
+        }
+
+        // Gráfico
+        function renderChart(categoryTotals, supplierTotals) {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            
+            let labels = [];
+            let data = [];
+
+            if (chartViewMode === 'category') {
+                labels = Object.keys(categoryTotals).map(k => state.categories[k] || k);
+                data = Object.values(categoryTotals);
+            } else {
+                const sortedSuppliers = Object.entries(supplierTotals).sort((a,b) => b[1] - a[1]);
+                let otherSum = 0;
+
+                sortedSuppliers.forEach(([name, val], idx) => {
+                    if (idx < 5) {
+                        labels.push(name);
+                        data.push(val);
+                    } else {
+                        otherSum += val;
+                    }
+                });
+
+                if (otherSum > 0) {
+                    labels.push("Outros");
+                    data.push(otherSum);
+                }
+            }
+
+            if (chartInstance) {
+                chartInstance.data.labels = labels;
+                chartInstance.data.datasets[0].data = data;
+                chartInstance.data.datasets[0].borderColor = getSavedTheme() === 'dark' ? '#1e293b' : '#ffffff';
+                chartInstance.update();
+            } else {
+                chartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: chartColors,
+                            borderColor: getSavedTheme() === 'dark' ? '#1e293b' : '#ffffff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    boxWidth: 10,
+                                    font: { size: 9 },
+                                    color: getSavedTheme() === 'dark' ? '#cbd5e1' : '#475569'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
