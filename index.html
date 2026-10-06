@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Reforma e Ampliação: Casa de Carlos e Bruna 🏡</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -15,7 +15,7 @@
             darkMode: 'class'
         }
     </script>
-    <!-- Script de Inicialização Rápida de Tema (Evita 'piscar' branco ao recarregar) -->
+    <!-- Script de Inicialização Rápida de Tema -->
     <script>
         (function() {
             const savedTheme = localStorage.getItem('edifica_theme');
@@ -28,127 +28,148 @@
         })();
     </script>
     <style>
+        /* Touch Targets & Mobile Feel */
+        html {
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            padding-bottom: env(safe-area-inset-bottom, 24px);
+        }
+        /* Previne zoom automático indesejado no iOS ao focar em inputs */
+        @media screen and (max-width: 768px) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+        }
+        /* Barra de rolagem discreta */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
         /* Animações dos Toasts */
         @keyframes toastIn {
-            from { opacity: 0; transform: translateY(-16px) scale(0.95); }
+            from { opacity: 0; transform: translateY(-12px) scale(0.96); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes toastOut {
             from { opacity: 1; transform: translateY(0) scale(1); }
-            to { opacity: 0; transform: translateY(-16px) scale(0.95); }
+            to { opacity: 0; transform: translateY(-12px) scale(0.96); }
         }
-        .toast-enter { animation: toastIn 0.25s ease-out forwards; }
-        .toast-exit { animation: toastOut 0.25s ease-in forwards; }
+        .toast-enter { animation: toastIn 0.22s ease-out forwards; }
+        .toast-exit { animation: toastOut 0.22s ease-in forwards; }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen font-sans transition-colors duration-200 antialiased pb-12 sm:pb-8">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen font-sans transition-colors duration-200 antialiased selection:bg-indigo-500 selection:text-white">
 
     <!-- Container Flutuante para Toasts -->
-    <div id="toastContainer" class="fixed top-3 left-3 right-3 sm:left-auto sm:right-5 sm:top-5 z-50 flex flex-col gap-2 pointer-events-none max-w-sm mx-auto sm:mx-0 w-auto"></div>
+    <div id="toastContainer" class="fixed top-2 left-2 right-2 sm:left-auto sm:right-5 sm:top-5 z-50 flex flex-col gap-2 pointer-events-none max-w-sm mx-auto sm:mx-0 w-auto"></div>
 
     <!-- Tela de Login (Overlay) -->
-    <div id="loginScreen" class="hidden fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
+    <div id="loginScreen" class="hidden fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4 sm:p-6 overflow-y-auto">
         <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
-            <div class="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-indigo-500 blur-3xl"></div>
-            <div class="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-emerald-500 blur-3xl"></div>
+            <div class="absolute -top-32 -left-32 w-80 h-80 rounded-full bg-indigo-500 blur-3xl"></div>
+            <div class="absolute -bottom-32 -right-32 w-80 h-80 rounded-full bg-emerald-500 blur-3xl"></div>
         </div>
 
-        <div class="relative bg-slate-800 text-slate-100 p-6 sm:p-8 rounded-3xl shadow-2xl max-w-md w-full border border-slate-700 space-y-6">
-            <div class="text-center space-y-1">
-                <span class="text-4xl">🏡</span>
-                <h2 class="text-xl sm:text-2xl font-black tracking-tight text-white mt-2">Acesso ao Sistema</h2>
-                <p class="text-xs text-slate-400">Reforma & Ampliação: Casa de Carlos e Bruna</p>
+        <div class="relative bg-slate-800 text-slate-100 p-6 sm:p-8 rounded-3xl shadow-2xl max-w-md w-full border border-slate-700/80 space-y-6 my-auto">
+            <div class="text-center space-y-1.5">
+                <span class="text-4xl inline-block drop-shadow">🏡</span>
+                <h2 class="text-xl sm:text-2xl font-black tracking-tight text-white mt-1">Acesso ao Painel</h2>
+                <p class="text-xs text-slate-400">Reforma & Ampliação: Carlos e Bruna</p>
             </div>
 
             <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Usuário</label>
-                    <input type="text" id="loginUser" required placeholder="Digite seu usuário..." class="w-full px-3.5 py-3 bg-slate-700/80 border border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-white">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Usuário</label>
+                    <input type="text" id="loginUser" required placeholder="Digite seu usuário..." autocomplete="username" class="w-full px-4 py-3.5 bg-slate-700/80 border border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-white placeholder-slate-400 transition">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Senha</label>
-                    <input type="password" id="loginPass" required placeholder="••••••••" class="w-full px-3.5 py-3 bg-slate-700/80 border border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-white">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Senha</label>
+                    <input type="password" id="loginPass" required placeholder="••••••••" autocomplete="current-password" class="w-full px-4 py-3.5 bg-slate-700/80 border border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-white placeholder-slate-400 transition">
                 </div>
-                <div id="loginError" class="hidden text-xs text-red-400 font-bold bg-red-950/40 p-3 rounded-xl border border-red-900/60">
+                <div id="loginError" class="hidden text-xs text-red-400 font-bold bg-red-950/50 p-3 rounded-xl border border-red-900/60 text-center">
                     ❌ Usuário ou senha incorretos!
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl transition text-sm shadow-lg shadow-indigo-600/30">
-                    Entrar no Painel 🔑
+                <button type="submit" class="w-full min-h-[48px] bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl transition text-sm shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2">
+                    <span>Entrar no Painel</span> <span>🔑</span>
                 </button>
             </form>
-            <div class="text-[11px] text-slate-400 text-center bg-slate-700/50 p-2.5 rounded-xl border border-slate-700/60">
-                Visualização rápida: <strong>bruna</strong> / senha <strong>1234</strong>
+            <div class="text-[11px] text-slate-400 text-center bg-slate-700/50 p-3 rounded-xl border border-slate-700/60 leading-relaxed">
+                Acesso visitante / leitura: <br><strong class="text-slate-200">bruna</strong> &bull; senha <strong class="text-slate-200">1234</strong>
             </div>
         </div>
     </div>
 
     <!-- Container Principal do App -->
-    <div id="appContainer" class="hidden">
+    <div id="appContainer" class="hidden flex flex-col min-h-screen">
         
         <!-- Overlay de Sincronização Inicial -->
         <div id="cloudSyncOverlay" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex flex-col justify-center items-center text-white px-4">
-            <div class="bg-slate-800 p-6 rounded-2xl shadow-xl max-w-sm w-full text-center border border-slate-700/50 space-y-4">
+            <div class="bg-slate-800 p-6 rounded-2xl shadow-xl max-w-sm w-full text-center border border-slate-700/60 space-y-4">
                 <div class="flex justify-center">
-                    <div class="animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent"></div>
+                    <div class="animate-spin rounded-full h-11 w-11 border-4 border-indigo-500 border-t-transparent"></div>
                 </div>
                 <div>
-                    <h3 class="font-bold text-base text-slate-100">Sincronizando com a Nuvem</h3>
-                    <p class="text-xs text-slate-400 mt-1">Buscando os lançamentos mais recentes para manter seus dispositivos alinhados.</p>
+                    <h3 class="font-bold text-base text-slate-100">Sincronizando Dados</h3>
+                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Conectando com o Google Sheets para manter seus dispositivos alinhados.</p>
                 </div>
                 <div class="pt-2">
-                    <button onclick="dismissSyncOverlay()" class="w-full bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold py-2.5 rounded-xl transition">
-                        Trabalhar Offline 🔌
+                    <button onclick="dismissSyncOverlay()" class="w-full min-h-[44px] bg-slate-700 hover:bg-slate-600 active:scale-95 text-white text-xs font-bold py-2.5 rounded-xl transition">
+                        Continuar Offline 🔌
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Header Responsivo -->
-        <header class="bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 text-white shadow-md py-4 sm:py-6 px-4 md:px-8 border-b border-indigo-900/40">
-            <div class="max-w-7xl mx-auto flex flex-col gap-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h1 class="text-lg sm:text-2xl font-black tracking-tight flex items-center gap-2">
-                            <span>Casa de Carlos e Bruna</span> <span class="text-xl sm:text-2xl">🏡</span>
+        <!-- Header Responsivo Mobile Otimizado -->
+        <header class="bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 text-white shadow-md border-b border-indigo-900/40 sticky top-0 z-30">
+            <div class="max-w-7xl mx-auto px-3.5 py-3 sm:px-6 sm:py-4 flex flex-col gap-3">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="min-w-0">
+                        <h1 class="text-base sm:text-2xl font-black tracking-tight truncate flex items-center gap-1.5">
+                            <span class="truncate">Carlos e Bruna</span> <span class="text-base sm:text-xl shrink-0">🏡</span>
                         </h1>
-                        <div class="flex items-center gap-2 mt-0.5">
-                            <span class="text-indigo-300 text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded bg-indigo-900/60 border border-indigo-700/40">
-                                Reforma & Ampliação
+                        <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                            <span class="text-indigo-300 text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-md bg-indigo-900/70 border border-indigo-700/50 whitespace-nowrap">
+                                Obra e Reforma
                             </span>
-                            <span id="userBadge" class="text-[10px] sm:text-xs bg-slate-800 px-2 py-0.5 rounded text-indigo-200 font-bold border border-slate-700"></span>
+                            <span id="userBadge" class="text-[10px] sm:text-xs bg-slate-800 px-2 py-0.5 rounded-md text-indigo-200 font-bold border border-slate-700 truncate max-w-[150px]"></span>
                         </div>
                     </div>
 
-                    <!-- Botão de Sair -->
-                    <button onclick="logout()" class="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-red-500/20 text-red-300 hover:bg-red-500/30 border border-red-500/30 text-xs font-bold transition flex items-center gap-1">
+                    <!-- Botão de Sair com área de clique aprimorada -->
+                    <button onclick="logout()" class="shrink-0 min-h-[38px] px-3 py-1.5 rounded-xl bg-red-500/20 text-red-300 hover:bg-red-500/30 active:scale-95 border border-red-500/30 text-xs font-bold transition flex items-center gap-1.5" aria-label="Sair do Sistema">
                         <span>🚪</span> <span class="hidden sm:inline">Sair</span>
                     </button>
                 </div>
                 
-                <!-- Barra de Ferramentas / Ações Rápidas no Header -->
-                <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-                    <button id="themeToggleBtn" onclick="toggleTheme()" class="flex-1 sm:flex-initial bg-white/10 hover:bg-white/20 active:bg-white/25 text-xs font-bold px-3 py-2.5 rounded-xl transition text-white whitespace-nowrap text-center">
-                        🌙 Modo Escuro
+                <!-- Barra de Ações Rápidas com Scroll Suave no Celular -->
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5">
+                    <button id="themeToggleBtn" onclick="toggleTheme()" class="min-h-[38px] flex-1 sm:flex-initial bg-white/10 hover:bg-white/20 active:scale-95 text-xs font-bold px-3 py-2 rounded-xl transition text-white whitespace-nowrap text-center">
+                        🌙 Tema
                     </button>
-                    <button id="settingsBtn" onclick="toggleSettingsPanel()" class="flex-1 sm:flex-initial bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-xs font-bold px-3.5 py-2.5 rounded-xl transition shadow text-white whitespace-nowrap text-center">
-                        ⚙️ Configurações
+                    <button id="settingsBtn" onclick="toggleSettingsPanel()" class="min-h-[38px] flex-1 sm:flex-initial bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-xs font-bold px-3.5 py-2 rounded-xl transition shadow text-white whitespace-nowrap text-center">
+                        ⚙️ Opções
                     </button>
-                    <button onclick="generateShareQr()" class="sm:hidden bg-slate-800 hover:bg-slate-700 text-xs font-bold px-3 py-2.5 rounded-xl border border-slate-700 text-slate-200 whitespace-nowrap">
+                    <button onclick="generateShareQr()" class="min-h-[38px] sm:hidden bg-slate-800 hover:bg-slate-700 active:scale-95 text-xs font-bold px-3 py-2 rounded-xl border border-slate-700 text-slate-200 whitespace-nowrap">
                         📱 QR Code
                     </button>
                 </div>
             </div>
         </header>
 
-        <main class="max-w-7xl mx-auto p-3 sm:p-5 md:p-8 space-y-5 sm:space-y-6">
+        <main class="flex-1 max-w-7xl w-full mx-auto p-3.5 sm:p-5 md:p-8 space-y-4 sm:space-y-6">
 
             <!-- Painel de Configurações Colapsável -->
-            <div id="settingsPanel" class="hidden bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-5">
+            <div id="settingsPanel" class="hidden bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-5 animate-in fade-in duration-200">
                 <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-3">
-                    <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                    <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                         ⚙️ Painel de Configurações
                     </h3>
-                    <button onclick="toggleSettingsPanel()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 hover:text-slate-900 font-bold text-sm">✕</button>
+                    <button onclick="toggleSettingsPanel()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 hover:text-slate-900 active:scale-95 font-bold text-base flex items-center justify-center">✕</button>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -157,27 +178,27 @@
                         <h4 class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Gerais</h4>
                         <div>
                             <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Orçamento Planejado (R$)</label>
-                            <input type="number" id="globalBudget" value="60000" onchange="updateBudget(this.value)" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
+                            <input type="number" id="globalBudget" value="60000" onchange="updateBudget(this.value)" class="w-full px-3.5 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
                         </div>
                         <div>
                             <div class="flex justify-between items-center mb-1">
                                 <label class="block text-xs font-bold text-slate-500 dark:text-slate-400">Google Sheets URL</label>
                                 <span id="cloudStatusBadge" class="text-[10px] font-bold"></span>
                             </div>
-                            <input type="text" id="sheetsUrl" readonly class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-500 dark:text-slate-400 cursor-not-allowed">
+                            <input type="text" id="sheetsUrl" readonly class="w-full px-3 py-2.5 bg-slate-100 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-500 dark:text-slate-400 cursor-not-allowed">
                         </div>
 
                         <!-- Abrir no celular -->
                         <div class="pt-3 border-t border-slate-100 dark:border-slate-700 space-y-2">
                             <h4 class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Conectar Celular</h4>
-                            <button onclick="generateShareQr()" class="w-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 text-xs font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5">
-                                📱 Gerar QR Code do App
+                            <button onclick="generateShareQr()" class="w-full min-h-[44px] bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 active:scale-[0.99] text-slate-800 dark:text-slate-100 text-xs font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2">
+                                <span>📱 Gerar QR Code do App</span>
                             </button>
                             
                             <div id="qrShareContainer" class="hidden bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col items-center space-y-2 text-center">
                                 <img id="qrShareImg" src="" alt="QR Code" class="rounded-lg shadow border border-white max-w-[160px]">
-                                <p class="text-[11px] text-slate-500 dark:text-slate-400">Escaneie com a câmera do celular para abrir!</p>
-                                <input type="text" id="qrShareLink" readonly class="w-full text-[10px] px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-center">
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400">Escaneie com a câmera do celular para sincronizar e usar!</p>
+                                <input type="text" id="qrShareLink" readonly class="w-full text-[10px] px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-center">
                             </div>
                         </div>
                     </div>
@@ -186,8 +207,8 @@
                     <div class="space-y-3">
                         <h4 class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Categorias de Despesas</h4>
                         <div class="flex gap-2">
-                            <input type="text" id="newCategoryInput" placeholder="Nova Categoria..." class="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
-                            <button onclick="addCustomCategory()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition">
+                            <input type="text" id="newCategoryInput" placeholder="Nova Categoria..." class="flex-1 px-3 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
+                            <button onclick="addCustomCategory()" class="min-h-[44px] bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-bold px-4 py-2 rounded-xl transition whitespace-nowrap">
                                 Adicionar
                             </button>
                         </div>
@@ -200,61 +221,61 @@
 
             <!-- Importação / Exportação rápida -->
             <div id="importExportBox" class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                <div>
+                <div class="w-full sm:w-auto">
                     <span class="block text-xs font-bold text-slate-800 dark:text-slate-200">Exportação e Backup (.xlsx)</span>
-                    <span class="text-[11px] text-slate-400">Baixe modelos, importe ou exporte planilhas Excel.</span>
+                    <span class="text-[11px] text-slate-400">Modelos, relatórios e importações em planilha.</span>
                 </div>
                 <div class="grid grid-cols-2 sm:flex flex-wrap gap-2 w-full sm:w-auto">
-                    <button onclick="downloadTemplate()" class="bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 text-xs font-bold py-2 px-3 rounded-xl border border-indigo-200 dark:border-indigo-800 text-center">
-                        📋 Modelo
+                    <button onclick="downloadTemplate()" class="min-h-[42px] bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/40 active:scale-95 text-indigo-600 dark:text-indigo-300 text-xs font-bold py-2 px-3 rounded-xl border border-indigo-200 dark:border-indigo-800 text-center flex items-center justify-center gap-1">
+                        <span>📋 Modelo Excel</span>
                     </button>
-                    <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 px-3 rounded-xl transition text-center shadow">
-                        📊 Exportar
+                    <button onclick="exportToExcel()" class="min-h-[42px] bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold py-2 px-3 rounded-xl transition text-center shadow flex items-center justify-center gap-1">
+                        <span>📊 Exportar Excel</span>
                     </button>
-                    <label class="col-span-2 sm:col-span-1 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 text-xs font-bold py-2 px-3 rounded-xl transition cursor-pointer text-center border border-slate-200 dark:border-slate-600">
-                        📥 Importar Excel
+                    <label class="col-span-2 sm:col-span-1 min-h-[42px] bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 active:scale-95 text-slate-700 dark:text-slate-200 text-xs font-bold py-2 px-3 rounded-xl transition cursor-pointer text-center border border-slate-200 dark:border-slate-600 flex items-center justify-center gap-1">
+                        <span>📥 Importar Excel</span>
                         <input type="file" id="importFile" class="hidden" accept=".xlsx" onchange="importFromExcel(event)">
                     </label>
                 </div>
             </div>
 
-            <!-- Central de Alertas de Vencimento com Botão de Pagamento Direto -->
-            <div id="alertPanel" class="hidden bg-amber-50/90 dark:bg-amber-950/30 border-l-4 border-amber-500 p-3.5 sm:p-4 rounded-r-2xl shadow-sm space-y-2.5">
+            <!-- Central de Alertas de Vencimento -->
+            <div id="alertPanel" class="hidden bg-amber-50/95 dark:bg-amber-950/30 border-l-4 border-amber-500 p-3.5 sm:p-4 rounded-r-2xl shadow-sm space-y-3">
                 <div class="flex items-center justify-between">
                     <h3 class="font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1.5 text-xs sm:text-sm">
                         <span>⚠️</span> Contas Próximas do Vencimento
                     </h3>
-                    <span id="alertsTotalCount" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200"></span>
+                    <span id="alertsTotalCount" class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-amber-200 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200"></span>
                 </div>
                 <div id="alertsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs font-medium">
                     <!-- Preenchido cronologicamente com botão de pagamento -->
                 </div>
             </div>
 
-            <!-- Painel de Métricas -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+            <!-- Painel de Métricas Mobile-Friendly -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+                <div class="bg-white dark:bg-slate-800 p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Orçamento</span>
-                    <p class="text-base sm:text-xl md:text-2xl font-black text-slate-700 dark:text-slate-100 mt-1 truncate" id="metricBudget">R$ 0,00</p>
-                    <span class="text-[10px] text-slate-400 mt-1">Limite definido</span>
+                    <p class="text-sm sm:text-xl md:text-2xl font-black text-slate-700 dark:text-slate-100 mt-1 truncate" id="metricBudget">R$ 0,00</p>
+                    <span class="text-[10px] text-slate-400 mt-0.5 sm:mt-1">Limite definido</span>
                 </div>
-                <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+                <div class="bg-white dark:bg-slate-800 p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Gasto</span>
-                    <p class="text-base sm:text-xl md:text-2xl font-black text-amber-600 dark:text-amber-400 mt-1 truncate" id="metricSpent">R$ 0,00</p>
+                    <p class="text-sm sm:text-xl md:text-2xl font-black text-amber-600 dark:text-amber-400 mt-1 truncate" id="metricSpent">R$ 0,00</p>
                     <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
                         <div id="barSpent" class="bg-amber-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
                     </div>
                 </div>
-                <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+                <div class="bg-white dark:bg-slate-800 p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Saldo Livre</span>
-                    <p class="text-base sm:text-xl md:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 truncate" id="metricRemaining">R$ 0,00</p>
+                    <p class="text-sm sm:text-xl md:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 truncate" id="metricRemaining">R$ 0,00</p>
                     <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
                         <div id="barRemaining" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 100%"></div>
                     </div>
                 </div>
-                <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+                <div class="bg-white dark:bg-slate-800 p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Progresso</span>
-                    <p class="text-base sm:text-xl md:text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-1" id="metricPercent">0%</p>
+                    <p class="text-sm sm:text-xl md:text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-1" id="metricPercent">0%</p>
                     <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
                         <div id="barPercent" class="bg-indigo-600 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
                     </div>
@@ -262,37 +283,37 @@
             </div>
 
             <!-- Controle do Contrato Jackson -->
-            <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 space-y-4">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 dark:border-slate-700 pb-3">
+            <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 space-y-3.5">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1.5 border-b border-slate-100 dark:border-slate-700 pb-3">
                     <div>
                         <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                            🏗️ Jackson (Mão de Obra)
+                            <span>🏗️ Jackson (Mão de Obra)</span>
                         </h3>
                         <p class="text-[11px] text-slate-400">Teto Contratual: R$ 60.000,00</p>
                     </div>
                     <span id="jacksonStatusBadge" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-700">Carregando...</span>
                 </div>
                 
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
-                    <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-2.5 sm:p-3 rounded-xl border border-slate-100 dark:border-slate-700">
                         <span class="text-[9px] font-bold uppercase text-slate-400">Teto</span>
                         <p class="text-xs sm:text-sm md:text-base font-extrabold text-slate-700 dark:text-slate-200 mt-0.5 truncate">R$ 60.000,00</p>
                     </div>
-                    <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-2.5 sm:p-3 rounded-xl border border-slate-100 dark:border-slate-700">
                         <span class="text-[9px] font-bold uppercase text-slate-400">Total Lançado</span>
                         <p class="text-xs sm:text-sm md:text-base font-extrabold text-amber-600 mt-0.5 truncate" id="jacksonLaunched">R$ 0,00</p>
                     </div>
-                    <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-2.5 sm:p-3 rounded-xl border border-slate-100 dark:border-slate-700">
                         <span class="text-[9px] font-bold uppercase text-slate-400">Liquidado</span>
                         <p class="text-xs sm:text-sm md:text-base font-extrabold text-emerald-600 mt-0.5 truncate" id="jacksonPaid">R$ 0,00</p>
                     </div>
-                    <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-2.5 sm:p-3 rounded-xl border border-slate-100 dark:border-slate-700">
                         <span class="text-[9px] font-bold uppercase text-slate-400">Saldo Livre</span>
                         <p class="text-xs sm:text-sm md:text-base font-extrabold text-indigo-600 dark:text-indigo-400 mt-0.5 truncate" id="jacksonRemaining">R$ 0,00</p>
                     </div>
                 </div>
 
-                <div class="space-y-1 pt-1">
+                <div class="space-y-1.5 pt-0.5">
                     <div class="flex justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400">
                         <span>Consumo do Limite</span>
                         <span id="jacksonPercent">0%</span>
@@ -304,38 +325,38 @@
             </div>
 
             <!-- Formulários e Gráficos -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                 
                 <!-- Formulário de Despesa -->
                 <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 h-fit" id="formContainer">
                     <h2 id="formTitle" class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 mb-3 flex items-center gap-2">
-                        📝 Registrar Despesa
+                        <span>📝 Registrar Despesa</span>
                     </h2>
                     <form id="expenseForm" onsubmit="addExpense(event)" class="space-y-3.5">
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Descrição</label>
-                            <input type="text" id="desc" placeholder="Ex: Cimento, Pintor, Pia..." required class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
+                            <input type="text" id="desc" placeholder="Ex: Cimento, Pintor, Pia..." required class="w-full min-h-[44px] px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Valor (R$)</label>
-                                <input type="number" step="0.01" id="val" placeholder="0.00" required class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
+                                <input type="number" step="0.01" id="val" placeholder="0.00" required class="w-full min-h-[44px] px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Vencimento</label>
-                                <input type="date" id="dueDate" required class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
+                                <input type="date" id="dueDate" required class="w-full min-h-[44px] px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Fornecedor / Responsável</label>
-                                <input type="text" id="supplier" placeholder="Ex: Jackson, Leroy..." required class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
+                                <input type="text" id="supplier" placeholder="Ex: Jackson, Leroy..." required class="w-full min-h-[44px] px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Categoria</label>
-                                <select id="category" required class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
+                                <select id="category" required class="w-full min-h-[44px] px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
                                     <!-- Preenchido dinamicamente -->
                                 </select>
                             </div>
@@ -343,7 +364,7 @@
 
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Observações</label>
-                            <textarea id="observations" rows="2" placeholder="Notas adicionais sobre a compra..." class="w-full px-3.5 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100"></textarea>
+                            <textarea id="observations" rows="2" placeholder="Notas adicionais sobre a compra..." class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100"></textarea>
                         </div>
 
                         <!-- Configurações de Pagamento -->
@@ -351,7 +372,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Status</label>
-                                    <select id="status" required class="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
+                                    <select id="status" required class="w-full min-h-[42px] px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
                                         <option value="" disabled selected>Selecione...</option>
                                         <option value="Pago">🟢 Pago (Liquidado)</option>
                                         <option value="Pendente">🔴 Pendente (A Pagar)</option>
@@ -359,7 +380,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Forma de Pagto</label>
-                                    <select id="payMethod" required onchange="toggleInstallments()" class="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
+                                    <select id="payMethod" required onchange="toggleInstallments()" class="w-full min-h-[42px] px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
                                         <option value="" disabled selected>Selecione...</option>
                                         <option value="PIX">PIX / Transferência</option>
                                         <option value="Dinheiro">Dinheiro</option>
@@ -370,9 +391,9 @@
                                 </div>
                             </div>
 
-                            <div class="flex items-center pt-0.5">
-                                <label class="inline-flex items-center cursor-pointer text-xs font-bold uppercase text-slate-600 dark:text-slate-300">
-                                    <input type="checkbox" id="isInstallment" onchange="toggleInstallments()" class="rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500 h-4 w-4 mr-2">
+                            <div class="flex items-center pt-1">
+                                <label class="inline-flex items-center cursor-pointer text-xs font-bold uppercase text-slate-600 dark:text-slate-300 py-1">
+                                    <input type="checkbox" id="isInstallment" onchange="toggleInstallments()" class="rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500 h-5 w-5 mr-2">
                                     É compra parcelada?
                                 </label>
                             </div>
@@ -380,11 +401,11 @@
                             <div id="installmentConfig" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-200 dark:border-slate-700">
                                 <div>
                                     <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Qtd Parcelas</label>
-                                    <input type="number" id="installmentsCount" min="2" max="120" value="2" class="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
+                                    <input type="number" id="installmentsCount" min="2" max="120" value="2" class="w-full min-h-[42px] px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Método</label>
-                                    <select id="installmentMethod" class="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
+                                    <select id="installmentMethod" class="w-full min-h-[42px] px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
                                         <option value="" disabled selected>Selecione...</option>
                                         <option value="Cartão de Crédito">Cartão de Crédito</option>
                                         <option value="Boleto">Boleto Bancário</option>
@@ -394,11 +415,11 @@
                             </div>
                         </div>
 
-                        <div class="flex gap-2 pt-1">
-                            <button type="submit" id="submitBtn" class="flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-bold py-3 px-4 rounded-xl transition shadow text-sm">
-                                Salvar no Sistema 💾
+                        <div class="flex flex-col sm:flex-row gap-2 pt-1">
+                            <button type="submit" id="submitBtn" class="w-full min-h-[48px] bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-3 px-4 rounded-xl transition shadow text-sm flex items-center justify-center gap-1.5">
+                                <span>Salvar no Sistema</span> 💾
                             </button>
-                            <button type="button" id="cancelEditBtn" onclick="cancelEdit()" class="hidden bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-3 px-4 rounded-xl transition text-sm">
+                            <button type="button" id="cancelEditBtn" onclick="cancelEdit()" class="hidden w-full sm:w-auto min-h-[48px] bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 active:scale-[0.98] text-slate-700 dark:text-slate-200 font-bold py-3 px-4 rounded-xl transition text-sm">
                                 Cancelar
                             </button>
                         </div>
@@ -410,15 +431,15 @@
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                         <div>
                             <h2 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                                📊 Distribuição Financeira
+                                <span>📊 Distribuição Financeira</span>
                             </h2>
-                            <p class="text-[11px] text-slate-400">Custos totais por segmento</p>
+                            <p class="text-[11px] text-slate-400">Custos totais por segmento (detalhado)</p>
                         </div>
                         <div class="flex bg-slate-100 dark:bg-slate-700 p-1 rounded-xl w-full sm:w-auto">
-                            <button id="btnChartCategory" onclick="setChartViewMode('category')" class="flex-1 sm:flex-none px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white shadow transition">
+                            <button id="btnChartCategory" onclick="setChartViewMode('category')" class="flex-1 sm:flex-none min-h-[36px] px-3.5 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white shadow transition">
                                 Categorias
                             </button>
-                            <button id="btnChartSupplier" onclick="setChartViewMode('supplier')" class="flex-1 sm:flex-none px-3 py-1.5 text-xs font-bold rounded-lg bg-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition">
+                            <button id="btnChartSupplier" onclick="setChartViewMode('supplier')" class="flex-1 sm:flex-none min-h-[36px] px-3.5 py-1.5 text-xs font-bold rounded-lg bg-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition">
                                 Fornecedores
                             </button>
                         </div>
@@ -431,29 +452,29 @@
 
             <!-- Extrato de Lançamentos -->
             <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
-                <div class="p-4 sm:px-6 sm:py-4 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div class="p-3.5 sm:px-6 sm:py-4 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
                     <h2 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                        📋 Extrato de Lançamentos
+                        <span>📋 Extrato de Lançamentos</span>
                     </h2>
-                    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                    <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
                         <div class="flex items-center gap-1.5 flex-1 sm:flex-initial">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">Ordem:</span>
-                            <select id="sortSelector" onchange="changeSortMode(this.value)" class="w-full sm:w-auto px-2.5 py-1.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs focus:outline-none text-slate-800 dark:text-slate-100 font-semibold">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap hidden sm:inline">Ordem:</span>
+                            <select id="sortSelector" onchange="changeSortMode(this.value)" class="w-full sm:w-auto min-h-[38px] px-2.5 py-1.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs focus:outline-none text-slate-800 dark:text-slate-100 font-semibold">
                                 <option value="date_asc">🗓️ Vencimento (Próximos)</option>
                                 <option value="date_desc">🗓️ Vencimento (Distantes)</option>
                                 <option value="val_desc">💰 Maior Valor</option>
                                 <option value="val_asc">💰 Menor Valor</option>
                             </select>
                         </div>
-                        <button id="clearDataBtn" onclick="clearAllData()" class="text-xs bg-red-50 dark:bg-red-950/40 hover:bg-red-100 text-red-600 dark:text-red-300 px-3 py-1.5 rounded-xl font-bold transition border border-red-200/50">
+                        <button id="clearDataBtn" onclick="clearAllData()" class="min-h-[38px] text-xs bg-red-50 dark:bg-red-950/40 hover:bg-red-100 active:scale-95 text-red-600 dark:text-red-300 px-3 py-1.5 rounded-xl font-bold transition border border-red-200/50 whitespace-nowrap">
                             Limpar
                         </button>
                     </div>
                 </div>
 
-                <!-- 1. Visualização Mobile: Cards Touch-Friendly -->
-                <div id="expenseMobileList" class="block md:hidden divide-y divide-slate-100 dark:divide-slate-700/60 p-2 space-y-2">
-                    <!-- Cards são injetados aqui -->
+                <!-- 1. Visualização Mobile: Cards Touch-Friendly Sem Rolagem Horizontal -->
+                <div id="expenseMobileList" class="block md:hidden divide-y divide-slate-100 dark:divide-slate-700/60 p-2.5 space-y-2.5">
+                    <!-- Cards móveis otimizados injetados aqui -->
                 </div>
 
                 <!-- 2. Visualização Desktop: Tabela Tradicional -->
@@ -517,7 +538,8 @@
             "Logistica": "Logística e Serviços Gerais"
         };
 
-        const chartColors = [
+        // Paleta base de cores
+        const baseChartColors = [
             'rgba(79, 70, 229, 0.85)',   // Indigo
             'rgba(245, 158, 11, 0.85)',  // Amber
             'rgba(16, 185, 129, 0.85)',  // Emerald
@@ -527,8 +549,26 @@
             'rgba(168, 85, 247, 0.85)',  // Roxo
             'rgba(14, 165, 233, 0.85)',  // Sky
             'rgba(139, 92, 246, 0.85)',  // Violeta
-            'rgba(100, 116, 139, 0.85)'  // Slate
+            'rgba(100, 116, 139, 0.85)', // Slate
+            'rgba(20, 184, 166, 0.85)',  // Teal
+            'rgba(249, 115, 22, 0.85)',  // Laranja
+            'rgba(217, 70, 239, 0.85)',  // Fuchsia
+            'rgba(132, 204, 22, 0.85)'   // Lime
         ];
+
+        // Gera cores para quantidade arbitrária de itens sem colisão
+        function generateColorPalette(count) {
+            const colors = [];
+            for (let i = 0; i < count; i++) {
+                if (i < baseChartColors.length) {
+                    colors.push(baseChartColors[i]);
+                } else {
+                    const hue = (i * 137.508) % 360; 
+                    colors.push(`hsla(${hue}, 70%, 55%, 0.85)`);
+                }
+            }
+            return colors;
+        }
 
         // --- SISTEMA ROBUSTO DE TEMA (CLARO / ESCURO) ---
         function getSavedTheme() {
@@ -589,7 +629,7 @@
             }
 
             toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-xl text-xs sm:text-sm font-bold border border-white/10 ${bgStyles} toast-enter`;
-            toast.innerHTML = `<span>${icon}</span><span class="flex-1">${message}</span>`;
+            toast.innerHTML = `<span class="text-base">${icon}</span><span class="flex-1">${message}</span>`;
 
             container.appendChild(toast);
 
@@ -737,10 +777,10 @@
             
             Object.entries(state.categories).forEach(([key, val]) => {
                 const div = document.createElement('div');
-                div.className = "flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 p-2 rounded-xl text-[11px] font-semibold border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200";
+                div.className = "flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 p-2.5 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200";
                 div.innerHTML = `
                     <span class="truncate pr-1">${val}</span>
-                    <button onclick="deleteCategory('${key}')" class="text-red-500 hover:text-red-700 font-bold px-1.5 py-0.5 rounded bg-red-50 dark:bg-red-950/30 hover:bg-red-100 transition">
+                    <button onclick="deleteCategory('${key}')" class="text-red-500 hover:text-red-700 font-bold px-2 py-1 rounded-lg bg-red-50 dark:bg-red-950/30 hover:bg-red-100 transition">
                         ✕
                     </button>
                 `;
@@ -787,11 +827,11 @@
             const btnSupp = document.getElementById('btnChartSupplier');
             
             if (mode === 'category') {
-                btnCat.className = "flex-1 sm:flex-none px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white shadow transition";
-                btnSupp.className = "flex-1 sm:flex-none px-3 py-1.5 text-xs font-bold rounded-lg bg-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition";
+                btnCat.className = "flex-1 sm:flex-none min-h-[36px] px-3.5 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white shadow transition";
+                btnSupp.className = "flex-1 sm:flex-none min-h-[36px] px-3.5 py-1.5 text-xs font-bold rounded-lg bg-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition";
             } else {
-                btnCat.className = "flex-1 sm:flex-none px-3 py-1.5 text-xs font-bold rounded-lg bg-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition";
-                btnSupp.className = "flex-1 sm:flex-none px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white shadow transition";
+                btnCat.className = "flex-1 sm:flex-none min-h-[36px] px-3.5 py-1.5 text-xs font-bold rounded-lg bg-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition";
+                btnSupp.className = "flex-1 sm:flex-none min-h-[36px] px-3.5 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white shadow transition";
             }
             render(); 
         }
@@ -973,8 +1013,8 @@
             if (!item) return;
 
             editingId = id;
-            document.getElementById('formTitle').innerText = "✏️ Editar Lançamento";
-            document.getElementById('submitBtn').innerText = "Atualizar Despesa 💾";
+            document.getElementById('formTitle').innerHTML = "<span>✏️ Editar Lançamento</span>";
+            document.getElementById('submitBtn').innerHTML = "<span>Atualizar Despesa</span> 💾";
             document.getElementById('cancelEditBtn').classList.remove('hidden');
 
             document.getElementById('desc').value = item.desc;
@@ -1004,8 +1044,8 @@
 
         function cancelEdit() {
             editingId = null;
-            document.getElementById('formTitle').innerText = "📝 Registrar Despesa";
-            document.getElementById('submitBtn').innerText = "Salvar no Sistema 💾";
+            document.getElementById('formTitle').innerHTML = "<span>📝 Registrar Despesa</span>";
+            document.getElementById('submitBtn').innerHTML = "<span>Salvar no Sistema</span> 💾";
             document.getElementById('cancelEditBtn').classList.add('hidden');
             resetFormToNeutral();
         }
@@ -1157,7 +1197,6 @@
 
                 const cloudState = await response.json();
                 if (cloudState && typeof cloudState === 'object' && Array.isArray(cloudState.expenses)) {
-                    // Mantém o tema configurado localmente no aparelho
                     const currentLocalTheme = getSavedTheme();
                     state = cloudState;
                     state.theme = currentLocalTheme;
@@ -1347,16 +1386,16 @@
                     categoryTotals[item.category] = (categoryTotals[item.category] || 0) + item.val;
                 }
 
-                const suppName = item.supplier ? item.supplier.trim() : "Outros";
+                const suppName = item.supplier ? item.supplier.trim() : "Não Informado";
                 supplierTotals[suppName] = (supplierTotals[suppName] || 0) + item.val;
 
                 const isPaid = item.status === 'Pago';
                 const statusBadge = isPaid 
-                    ? '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300">🟢 Pago</span>'
-                    : '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-100 dark:bg-red-950/50 text-red-800 dark:text-red-300">🔴 Pendente</span>';
+                    ? '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">🟢 Pago</span>'
+                    : '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-300">🔴 Pendente</span>';
 
                 const obsDiv = item.observations 
-                    ? `<div class="text-slate-500 dark:text-slate-400 text-[10px] mt-1 italic border-l-2 border-slate-300 dark:border-slate-600 pl-1.5">${item.observations}</div>` 
+                    ? `<div class="text-slate-500 dark:text-slate-400 text-[10px] sm:text-xs mt-1.5 italic bg-slate-50 dark:bg-slate-900/40 p-2 rounded-lg border-l-2 border-indigo-500">${item.observations}</div>` 
                     : '';
 
                 // Ações Desktop
@@ -1407,46 +1446,48 @@
                     </tr>
                 `;
 
-                // 2. Card Mobile Touch-Friendly
+                // 2. Card Mobile Touch-Friendly Totalmente Otimizado
                 const payBtnMobile = (isMaster && !isPaid) ? `
-                    <button onclick="markAsPaid(${item.id})" class="flex-1 py-2 px-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 shadow-sm">
-                        <span>✔️</span> Pagar
+                    <button onclick="markAsPaid(${item.id})" class="min-h-[44px] flex-1 py-2 px-3 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
+                        <span>✔️</span> <span>Pagar</span>
                     </button>
                 ` : '';
 
                 const actionsMobile = isMaster ? `
-                    <div class="flex items-center gap-1.5 pt-2.5 border-t border-slate-100 dark:border-slate-700/70">
+                    <div class="flex items-center gap-2 pt-2.5 border-t border-slate-100 dark:border-slate-700/70">
                         ${payBtnMobile}
-                        <button onclick="editExpense(${item.id})" class="flex-1 py-2 px-2 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 rounded-xl text-xs font-bold transition text-center">
-                            ✏️ Editar
+                        <button onclick="editExpense(${item.id})" class="min-h-[44px] flex-1 py-2 px-3 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 active:scale-95 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1">
+                            <span>✏️</span> <span>Editar</span>
                         </button>
-                        <button onclick="deleteExpense(${item.id})" class="py-2 px-3 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300 border border-red-200 dark:border-red-900 rounded-xl text-xs font-bold transition text-center">
-                            🗑️
+                        <button onclick="deleteExpense(${item.id})" class="min-h-[44px] px-3.5 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300 border border-red-200 dark:border-red-900 active:scale-95 rounded-xl text-xs font-bold transition flex items-center justify-center" aria-label="Excluir Despesa">
+                            <span>🗑️</span>
                         </button>
                     </div>
                 ` : '';
 
                 cardsHtml += `
-                    <div class="bg-white dark:bg-slate-800/90 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm space-y-2.5">
+                    <div class="bg-white dark:bg-slate-800/90 p-3.5 sm:p-4 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm space-y-2.5">
                         <div class="flex justify-between items-start gap-2">
-                            <div>
-                                <h3 class="font-extrabold text-sm text-slate-800 dark:text-slate-100 leading-tight">${item.desc}</h3>
-                                <p class="text-[11px] text-slate-400 mt-0.5">Resp: <strong class="text-slate-600 dark:text-slate-300">${item.supplier}</strong> • ${state.categories[item.category] || item.category}</p>
+                            <div class="min-w-0 flex-1">
+                                <h3 class="font-extrabold text-sm sm:text-base text-slate-800 dark:text-slate-100 leading-snug break-words">${item.desc}</h3>
+                                <p class="text-[11px] text-slate-400 mt-0.5 truncate">
+                                    Resp: <strong class="text-slate-600 dark:text-slate-300">${item.supplier}</strong> &bull; ${state.categories[item.category] || item.category}
+                                </p>
                             </div>
-                            <div class="text-right whitespace-nowrap">
-                                <span class="text-sm font-black text-slate-900 dark:text-white block">${formatCurrency(item.val)}</span>
-                                <div class="mt-1">${statusBadge}</div>
+                            <div class="text-right shrink-0">
+                                <span class="text-sm sm:text-base font-black text-slate-900 dark:text-white block">${formatCurrency(item.val)}</span>
+                                <div class="mt-1 flex justify-end">${statusBadge}</div>
                             </div>
                         </div>
 
-                        <div class="flex items-center justify-between text-[11px] bg-slate-50 dark:bg-slate-900/60 p-2 rounded-xl border border-slate-100 dark:border-slate-700">
+                        <div class="grid grid-cols-2 gap-2 text-[11px] bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-100 dark:border-slate-700/70">
                             <div>
                                 <span class="text-slate-400 block text-[9px] uppercase font-bold">Vencimento</span>
-                                <span class="font-bold text-slate-700 dark:text-slate-300">${formatDateBR(item.dueDate)}</span>
+                                <span class="font-bold text-slate-700 dark:text-slate-300 text-xs">${formatDateBR(item.dueDate)}</span>
                             </div>
                             <div class="text-right">
                                 <span class="text-slate-400 block text-[9px] uppercase font-bold">Pagamento</span>
-                                <span class="font-medium text-slate-600 dark:text-slate-300">${item.paymentMethod} (${item.installmentText || 'À vista'})</span>
+                                <span class="font-medium text-slate-600 dark:text-slate-300 truncate block">${item.paymentMethod} (${item.installmentText || 'À vista'})</span>
                             </div>
                         </div>
 
@@ -1469,9 +1510,9 @@
             const remainingEl = document.getElementById('metricRemaining');
             remainingEl.innerText = formatCurrency(remaining);
             if (remaining < 0) {
-                remainingEl.className = "text-base sm:text-xl md:text-2xl font-black text-red-600 mt-1 truncate";
+                remainingEl.className = "text-sm sm:text-xl md:text-2xl font-black text-red-600 mt-1 truncate";
             } else {
-                remainingEl.className = "text-base sm:text-xl md:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 truncate";
+                remainingEl.className = "text-sm sm:text-xl md:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 truncate";
             }
 
             document.getElementById('metricPercent').innerText = `${percentSpent.toFixed(1)}%`;
@@ -1514,7 +1555,7 @@
                 })
                 .filter(item => item.diffDays <= 15);
 
-            // Ordena cronologicamente: do mais urgente/atrasado ao mais distante
+            // Ordena cronologicamente
             pendingItems.sort((a, b) => a.dueDateObj - b.dueDateObj);
 
             let alertsHtml = '';
@@ -1540,24 +1581,24 @@
                     urgencyStyle = "bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-900/50 text-slate-800 dark:text-slate-300";
                 }
 
-                // Botão de Pagar direto no Card de Alerta
+                // Botão de Pagar direto no Card de Alerta com altura acessível
                 const payButtonInAlert = isMaster ? `
-                    <button onclick="markAsPaid(${item.id})" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold rounded-lg text-[10px] shadow transition flex items-center gap-1 cursor-pointer">
-                        <span>✔️</span> Pagar
+                    <button onclick="markAsPaid(${item.id})" class="min-h-[38px] px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold rounded-xl text-[11px] shadow transition flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap">
+                        <span>✔️ Pagar</span>
                     </button>
                 ` : '';
 
                 alertsHtml += `
-                    <div class="p-3 rounded-xl flex flex-col justify-between ${urgencyStyle}">
+                    <div class="p-3.5 rounded-2xl flex flex-col justify-between ${urgencyStyle}">
                         <div>
-                            <span class="font-black block text-[9px] uppercase tracking-wider">${alertMessage}</span>
-                            <span class="font-bold text-xs block truncate mt-0.5">${item.desc}</span>
-                            <span class="block text-[10px] opacity-80 mt-0.5 truncate font-medium">Resp: ${item.supplier || 'N/A'}</span>
+                            <span class="font-black block text-[10px] uppercase tracking-wider">${alertMessage}</span>
+                            <span class="font-bold text-xs sm:text-sm block truncate mt-0.5">${item.desc}</span>
+                            <span class="block text-[11px] opacity-85 mt-0.5 truncate font-medium">Resp: ${item.supplier || 'N/A'}</span>
                         </div>
-                        <div class="mt-2.5 flex items-center justify-between gap-2 border-t border-current/15 pt-1.5">
+                        <div class="mt-3 flex items-center justify-between gap-2 border-t border-current/15 pt-2">
                             <div>
-                                <span class="font-black block text-[11px] leading-tight">${formatCurrency(item.val)}</span>
-                                <span class="text-[9px] opacity-80 block">${formatDateBR(item.dueDate)}</span>
+                                <span class="font-black block text-xs sm:text-sm leading-tight">${formatCurrency(item.val)}</span>
+                                <span class="text-[10px] opacity-80 block">${formatDateBR(item.dueDate)}</span>
                             </div>
                             ${payButtonInAlert}
                         </div>
@@ -1575,7 +1616,7 @@
             }
         }
 
-        // Gráfico
+        // Gráfico (Com fornecedores desdobrados individualmente)
         function renderChart(categoryTotals, supplierTotals) {
             const ctx = document.getElementById('categoryChart').getContext('2d');
             
@@ -1586,27 +1627,23 @@
                 labels = Object.keys(categoryTotals).map(k => state.categories[k] || k);
                 data = Object.values(categoryTotals);
             } else {
-                const sortedSuppliers = Object.entries(supplierTotals).sort((a,b) => b[1] - a[1]);
-                let otherSum = 0;
+                // Desdobra nominalmente todos os fornecedores em ordem decrescente de valor sem agrupar em "Outros"
+                const sortedSuppliers = Object.entries(supplierTotals)
+                    .filter(([_, val]) => val > 0)
+                    .sort((a,b) => b[1] - a[1]);
 
-                sortedSuppliers.forEach(([name, val], idx) => {
-                    if (idx < 5) {
-                        labels.push(name);
-                        data.push(val);
-                    } else {
-                        otherSum += val;
-                    }
+                sortedSuppliers.forEach(([name, val]) => {
+                    labels.push(name);
+                    data.push(val);
                 });
-
-                if (otherSum > 0) {
-                    labels.push("Outros");
-                    data.push(otherSum);
-                }
             }
+
+            const dynamicPalette = generateColorPalette(labels.length);
 
             if (chartInstance) {
                 chartInstance.data.labels = labels;
                 chartInstance.data.datasets[0].data = data;
+                chartInstance.data.datasets[0].backgroundColor = dynamicPalette;
                 chartInstance.data.datasets[0].borderColor = getSavedTheme() === 'dark' ? '#1e293b' : '#ffffff';
                 chartInstance.update();
             } else {
@@ -1616,7 +1653,7 @@
                         labels: labels,
                         datasets: [{
                             data: data,
-                            backgroundColor: chartColors,
+                            backgroundColor: dynamicPalette,
                             borderColor: getSavedTheme() === 'dark' ? '#1e293b' : '#ffffff',
                             borderWidth: 2
                         }]
@@ -1629,7 +1666,7 @@
                                 position: 'bottom',
                                 labels: {
                                     boxWidth: 10,
-                                    font: { size: 9 },
+                                    font: { size: 10 },
                                     color: getSavedTheme() === 'dark' ? '#cbd5e1' : '#475569'
                                 }
                             }
