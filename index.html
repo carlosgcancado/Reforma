@@ -15,7 +15,7 @@
             darkMode: 'class'
         }
     </script>
-    <!-- Script de Inicialização Rápida de Tema -->
+    <!-- Script de Inicialização de Tema Rápido -->
     <script>
         (function() {
             const savedTheme = localStorage.getItem('edifica_theme');
@@ -28,28 +28,13 @@
         })();
     </script>
     <style>
-        /* Touch Targets & Mobile Feel */
-        html {
-            -webkit-tap-highlight-color: transparent;
-        }
-        body {
-            padding-bottom: env(safe-area-inset-bottom, 24px);
-        }
-        /* Previne zoom automático indesejado no iOS ao focar em inputs */
+        html { -webkit-tap-highlight-color: transparent; }
+        body { padding-bottom: env(safe-area-inset-bottom, 24px); }
         @media screen and (max-width: 768px) {
-            input, select, textarea {
-                font-size: 16px !important;
-            }
+            input, select, textarea { font-size: 16px !important; }
         }
-        /* Barra de rolagem discreta */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        /* Animações dos Toasts */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         @keyframes toastIn {
             from { opacity: 0; transform: translateY(-12px) scale(0.96); }
             to { opacity: 1; transform: translateY(0) scale(1); }
@@ -67,7 +52,7 @@
     <!-- Container Flutuante para Toasts -->
     <div id="toastContainer" class="fixed top-2 left-2 right-2 sm:left-auto sm:right-5 sm:top-5 z-50 flex flex-col gap-2 pointer-events-none max-w-sm mx-auto sm:mx-0 w-auto"></div>
 
-    <!-- Tela de Login (Overlay) -->
+    <!-- Tela de Login Segura -->
     <div id="loginScreen" class="hidden fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4 sm:p-6 overflow-y-auto">
         <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
             <div class="absolute -top-32 -left-32 w-80 h-80 rounded-full bg-indigo-500 blur-3xl"></div>
@@ -78,35 +63,134 @@
             <div class="text-center space-y-1.5">
                 <span class="text-4xl inline-block drop-shadow">🏡</span>
                 <h2 class="text-xl sm:text-2xl font-black tracking-tight text-white mt-1">Acesso ao Painel</h2>
-                <p class="text-xs text-slate-400">Reforma & Ampliação: Carlos e Bruna</p>
+                <p class="text-xs text-slate-400">Reforma & Ampliação: Gestão de Obra</p>
             </div>
 
             <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Usuário</label>
-                    <input type="text" id="loginUser" required placeholder="Digite seu usuário..." autocomplete="username" class="w-full px-4 py-3.5 bg-slate-700/80 border border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-white placeholder-slate-400 transition">
+                    <input type="text" id="loginUser" required placeholder="Digite seu usuário" autocomplete="username" class="w-full px-4 py-3.5 bg-slate-700/80 border border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-white placeholder-slate-400 transition">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Senha</label>
-                    <input type="password" id="loginPass" required placeholder="••••••••" autocomplete="current-password" class="w-full px-4 py-3.5 bg-slate-700/80 border border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-white placeholder-slate-400 transition">
+                    <div class="relative">
+                        <input type="password" id="loginPass" required placeholder="Digite sua senha" autocomplete="current-password" class="w-full px-4 py-3.5 pr-11 bg-slate-700/80 border border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-white placeholder-slate-400 transition">
+                        <button type="button" onclick="togglePasswordVisibility('loginPass', 'eyeIconLogin')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-200 transition focus:outline-none" aria-label="Visualizar Senha">
+                            <span id="eyeIconLogin" class="text-base select-none">👁️</span>
+                        </button>
+                    </div>
                 </div>
                 <div id="loginError" class="hidden text-xs text-red-400 font-bold bg-red-950/50 p-3 rounded-xl border border-red-900/60 text-center">
                     ❌ Usuário ou senha incorretos!
                 </div>
-                <button type="submit" class="w-full min-h-[48px] bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl transition text-sm shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2">
+                <button type="submit" id="loginSubmitBtn" class="w-full min-h-[48px] bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl transition text-sm shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2">
                     <span>Entrar no Painel</span> <span>🔑</span>
                 </button>
             </form>
-            <div class="text-[11px] text-slate-400 text-center bg-slate-700/50 p-3 rounded-xl border border-slate-700/60 leading-relaxed">
-                Acesso visitante / leitura: <br><strong class="text-slate-200">bruna</strong> &bull; senha <strong class="text-slate-200">1234</strong>
-            </div>
         </div>
     </div>
 
-    <!-- Container Principal do App -->
+    <!-- PAINEL EXCLUSIVO DO CONSTRUTOR JACKSON -->
+    <div id="jacksonContainer" class="hidden min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900">
+        <header class="bg-slate-900 text-white shadow-md border-b border-amber-900/40 sticky top-0 z-30">
+            <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+                <div>
+                    <h1 class="text-base sm:text-xl font-black tracking-tight flex items-center gap-2">
+                        <span>🏗️ Portal do Construtor</span>
+                    </h1>
+                    <p class="text-xs text-amber-300 font-medium">Acompanhamento Exclusivo de Mão de Obra: Fornecedor Jackson</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleTheme()" class="min-h-[38px] px-3 py-1.5 rounded-xl bg-slate-800 text-slate-200 text-xs font-bold hover:bg-slate-700 transition">
+                        🌓 Tema
+                    </button>
+                    <button onclick="logout()" class="min-h-[38px] px-3 py-1.5 rounded-xl bg-red-500/20 text-red-300 text-xs font-bold border border-red-500/30 hover:bg-red-500/30 transition">
+                        🚪 Sair
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-5xl w-full mx-auto p-4 sm:p-6 space-y-5 flex-1">
+            <div class="p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-amber-800 dark:text-amber-200 text-xs leading-relaxed flex items-center gap-2">
+                <span class="text-lg">ℹ️</span>
+                <span>Este painel exibe exclusivamente os lançamentos contratados diretamente sob a responsabilidade do <strong>Fornecedor Jackson</strong>.</span>
+            </div>
+
+            <!-- Métricas Específicas de Jackson -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Teto Contratado</span>
+                    <p class="text-base sm:text-xl font-black text-slate-800 dark:text-slate-100 mt-1">R$ 60.000,00</p>
+                    <span class="text-[10px] text-slate-400">Teto previsto Jackson</span>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Lançado</span>
+                    <p class="text-base sm:text-xl font-black text-amber-600 mt-1" id="jkMetricLaunched">R$ 0,00</p>
+                    <span class="text-[10px] text-slate-400" id="jkMetricPercent">0% do teto</span>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Recebido</span>
+                    <p class="text-base sm:text-xl font-black text-emerald-600 mt-1" id="jkMetricPaid">R$ 0,00</p>
+                    <span class="text-[10px] text-emerald-600 font-semibold">Liquidado</span>
+                </div>
+                <!-- Balão Ajustado: Valor a Receber como o saldo que falta do contrato -->
+                <div class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Valor a Receber</span>
+                    <p class="text-base sm:text-xl font-black text-indigo-600 dark:text-indigo-400 mt-1" id="jkMetricPending">R$ 0,00</p>
+                    <span class="text-[10px] text-slate-400" id="jkMetricPendingSub">Falta do contrato</span>
+                </div>
+            </div>
+
+            <!-- Barra de Progresso do Contrato -->
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-2">
+                <div class="flex justify-between text-xs font-bold text-slate-600 dark:text-slate-300">
+                    <span>Evolução do Contrato de Jackson</span>
+                    <span id="jkProgressText">0% faturado</span>
+                </div>
+                <div class="w-full bg-slate-100 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
+                    <div id="jkProgressBar" class="bg-amber-500 h-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Lista de Lançamentos Jackson -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800/80">
+                    <h3 class="font-bold text-sm sm:text-base text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                        <span>📜 Histórico dos Pagamentos e Medições (Fornecedor Jackson)</span>
+                    </h3>
+                    <span id="jkItemsCount" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">0 itens</span>
+                </div>
+
+                <div id="jkMobileList" class="block sm:hidden divide-y divide-slate-100 dark:divide-slate-700 p-3 space-y-3"></div>
+
+                <div class="hidden sm:block overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-slate-400 uppercase font-semibold">
+                                <th class="px-4 py-3">Data</th>
+                                <th class="px-4 py-3">Vencimento</th>
+                                <th class="px-4 py-3">Descrição da Medição</th>
+                                <th class="px-4 py-3">Forma Pagto</th>
+                                <th class="px-4 py-3 text-center">Status</th>
+                                <th class="px-4 py-3 text-right">Valor (R$)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jkTableBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+                    </table>
+                </div>
+
+                <div id="jkEmptyState" class="hidden p-8 text-center text-slate-400 text-sm">
+                    Nenhum lançamento vinculado ao fornecedor Jackson registrado até o momento.
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- PAINEL PRINCIPAL (ADMINISTRATIVO / GERAL) -->
     <div id="appContainer" class="hidden flex flex-col min-h-screen">
         
-        <!-- Overlay de Sincronização Inicial -->
+        <!-- Overlay de Sincronização em Nuvem -->
         <div id="cloudSyncOverlay" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex flex-col justify-center items-center text-white px-4">
             <div class="bg-slate-800 p-6 rounded-2xl shadow-xl max-w-sm w-full text-center border border-slate-700/60 space-y-4">
                 <div class="flex justify-center">
@@ -114,17 +198,17 @@
                 </div>
                 <div>
                     <h3 class="font-bold text-base text-slate-100">Sincronizando Dados</h3>
-                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Conectando com o Google Sheets para manter seus dispositivos alinhados.</p>
+                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Conectando ao Google Sheets para manter os dados atualizados.</p>
                 </div>
                 <div class="pt-2">
                     <button onclick="dismissSyncOverlay()" class="w-full min-h-[44px] bg-slate-700 hover:bg-slate-600 active:scale-95 text-white text-xs font-bold py-2.5 rounded-xl transition">
-                        Continuar Offline 🔌
+                        Continuar em Modo Local 🔌
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Header Responsivo Mobile Otimizado -->
+        <!-- Header Responsivo -->
         <header class="bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 text-white shadow-md border-b border-indigo-900/40 sticky top-0 z-30">
             <div class="max-w-7xl mx-auto px-3.5 py-3 sm:px-6 sm:py-4 flex flex-col gap-3">
                 <div class="flex items-center justify-between gap-2">
@@ -136,25 +220,32 @@
                             <span class="text-indigo-300 text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-md bg-indigo-900/70 border border-indigo-700/50 whitespace-nowrap">
                                 Obra e Reforma
                             </span>
-                            <span id="userBadge" class="text-[10px] sm:text-xs bg-slate-800 px-2 py-0.5 rounded-md text-indigo-200 font-bold border border-slate-700 truncate max-w-[150px]"></span>
+                            <span id="userBadge" class="text-[10px] sm:text-xs bg-slate-800 px-2 py-0.5 rounded-md text-indigo-200 font-bold border border-slate-700 truncate max-w-[170px]"></span>
                         </div>
                     </div>
 
-                    <!-- Botão de Sair com área de clique aprimorada -->
-                    <button onclick="logout()" class="shrink-0 min-h-[38px] px-3 py-1.5 rounded-xl bg-red-500/20 text-red-300 hover:bg-red-500/30 active:scale-95 border border-red-500/30 text-xs font-bold transition flex items-center gap-1.5" aria-label="Sair do Sistema">
+                    <!-- Botão de Sair -->
+                    <button onclick="logout()" class="shrink-0 min-h-[38px] px-3.5 py-1.5 rounded-xl bg-red-500/20 text-red-300 hover:bg-red-500/30 active:scale-95 border border-red-500/30 text-xs font-bold transition flex items-center gap-1.5" aria-label="Sair">
                         <span>🚪</span> <span class="hidden sm:inline">Sair</span>
                     </button>
                 </div>
                 
-                <!-- Barra de Ações Rápidas com Scroll Suave no Celular -->
+                <!-- Barra de Ações Rápidas -->
                 <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5">
+                    <button id="btnOpenNewExpense" onclick="openExpenseModal()" class="hidden min-h-[38px] flex-1 sm:flex-initial bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-xs font-bold px-3.5 py-2 rounded-xl transition shadow text-white whitespace-nowrap text-center items-center gap-1.5">
+                        <span>➕</span> <span>Nova Despesa</span>
+                    </button>
+                    <!-- Histórico de Atualizações: exclusivo do login Master de Carlos -->
+                    <button id="btnAuditLog" onclick="openAuditModal()" class="hidden min-h-[38px] flex-1 sm:flex-initial bg-slate-800 hover:bg-slate-700 border border-slate-700/80 active:scale-95 text-xs font-bold px-3.5 py-2 rounded-xl transition shadow text-indigo-200 whitespace-nowrap text-center flex items-center justify-center gap-1.5">
+                        <span>📜</span> <span>Histórico de Atualizações</span>
+                    </button>
                     <button id="themeToggleBtn" onclick="toggleTheme()" class="min-h-[38px] flex-1 sm:flex-initial bg-white/10 hover:bg-white/20 active:scale-95 text-xs font-bold px-3 py-2 rounded-xl transition text-white whitespace-nowrap text-center">
                         🌙 Tema
                     </button>
                     <button id="settingsBtn" onclick="toggleSettingsPanel()" class="min-h-[38px] flex-1 sm:flex-initial bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-xs font-bold px-3.5 py-2 rounded-xl transition shadow text-white whitespace-nowrap text-center">
                         ⚙️ Opções
                     </button>
-                    <button onclick="generateShareQr()" class="min-h-[38px] sm:hidden bg-slate-800 hover:bg-slate-700 active:scale-95 text-xs font-bold px-3 py-2 rounded-xl border border-slate-700 text-slate-200 whitespace-nowrap">
+                    <button onclick="generateShareQr()" class="min-h-[38px] sm:hidden bg-slate-800 hover:bg-slate-700 active:scale-95 text-xs font-bold px-3.5 py-2 rounded-xl border border-slate-700 text-slate-200 whitespace-nowrap">
                         📱 QR Code
                     </button>
                 </div>
@@ -167,43 +258,39 @@
             <div id="settingsPanel" class="hidden bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-5 animate-in fade-in duration-200">
                 <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-3">
                     <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                        ⚙️ Painel de Configurações
+                        ⚙️ Painel de Configurações Administrativas
                     </h3>
                     <button onclick="toggleSettingsPanel()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 hover:text-slate-900 active:scale-95 font-bold text-base flex items-center justify-center">✕</button>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <!-- Orçamento e Nuvem -->
                     <div class="space-y-4">
-                        <h4 class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Gerais</h4>
+                        <h4 class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Orçamento e Integração</h4>
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Orçamento Planejado (R$)</label>
-                            <input type="number" id="globalBudget" value="60000" onchange="updateBudget(this.value)" class="w-full px-3.5 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
+                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Orçamento Planejado Total (R$)</label>
+                            <input type="number" id="globalBudget" value="60000" onchange="updateBudget(this.value)" class="w-full px-3.5 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100 font-semibold">
                         </div>
                         <div>
                             <div class="flex justify-between items-center mb-1">
-                                <label class="block text-xs font-bold text-slate-500 dark:text-slate-400">Google Sheets URL</label>
+                                <label class="block text-xs font-bold text-slate-500 dark:text-slate-400">Endpoint Google Sheets</label>
                                 <span id="cloudStatusBadge" class="text-[10px] font-bold"></span>
                             </div>
                             <input type="text" id="sheetsUrl" readonly class="w-full px-3 py-2.5 bg-slate-100 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-500 dark:text-slate-400 cursor-not-allowed">
                         </div>
 
-                        <!-- Abrir no celular -->
                         <div class="pt-3 border-t border-slate-100 dark:border-slate-700 space-y-2">
                             <h4 class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Conectar Celular</h4>
                             <button onclick="generateShareQr()" class="w-full min-h-[44px] bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 active:scale-[0.99] text-slate-800 dark:text-slate-100 text-xs font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2">
-                                <span>📱 Gerar QR Code do App</span>
+                                <span>📱 Gerar QR Code de Acesso Rápido</span>
                             </button>
-                            
                             <div id="qrShareContainer" class="hidden bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col items-center space-y-2 text-center">
                                 <img id="qrShareImg" src="" alt="QR Code" class="rounded-lg shadow border border-white max-w-[160px]">
-                                <p class="text-[11px] text-slate-500 dark:text-slate-400">Escaneie com a câmera do celular para sincronizar e usar!</p>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400">Escaneie com a câmera do celular para abrir o sistema diretamente.</p>
                                 <input type="text" id="qrShareLink" readonly class="w-full text-[10px] px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-center">
                             </div>
                         </div>
                     </div>
 
-                    <!-- Gerenciar Categorias -->
                     <div class="space-y-3">
                         <h4 class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Categorias de Despesas</h4>
                         <div class="flex gap-2">
@@ -212,18 +299,16 @@
                                 Adicionar
                             </button>
                         </div>
-                        <div id="categoriesSettingsList" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
-                            <!-- Injetado dinamicamente -->
-                        </div>
+                        <div id="categoriesSettingsList" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Importação / Exportação rápida -->
+            <!-- Importação / Exportação -->
             <div id="importExportBox" class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div class="w-full sm:w-auto">
                     <span class="block text-xs font-bold text-slate-800 dark:text-slate-200">Exportação e Backup (.xlsx)</span>
-                    <span class="text-[11px] text-slate-400">Modelos, relatórios e importações em planilha.</span>
+                    <span class="text-[11px] text-slate-400">Baixe relatórios, modelo ou importe planilhas existentes.</span>
                 </div>
                 <div class="grid grid-cols-2 sm:flex flex-wrap gap-2 w-full sm:w-auto">
                     <button onclick="downloadTemplate()" class="min-h-[42px] bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/40 active:scale-95 text-indigo-600 dark:text-indigo-300 text-xs font-bold py-2 px-3 rounded-xl border border-indigo-200 dark:border-indigo-800 text-center flex items-center justify-center gap-1">
@@ -247,20 +332,18 @@
                     </h3>
                     <span id="alertsTotalCount" class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-amber-200 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200"></span>
                 </div>
-                <div id="alertsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs font-medium">
-                    <!-- Preenchido cronologicamente com botão de pagamento -->
-                </div>
+                <div id="alertsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs font-medium"></div>
             </div>
 
-            <!-- Painel de Métricas Mobile-Friendly -->
+            <!-- Métricas Globais da Obra -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
                 <div class="bg-white dark:bg-slate-800 p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Orçamento</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Orçamento Global</span>
                     <p class="text-sm sm:text-xl md:text-2xl font-black text-slate-700 dark:text-slate-100 mt-1 truncate" id="metricBudget">R$ 0,00</p>
-                    <span class="text-[10px] text-slate-400 mt-0.5 sm:mt-1">Limite definido</span>
+                    <span class="text-[10px] text-slate-400 mt-0.5">Teto estimado</span>
                 </div>
                 <div class="bg-white dark:bg-slate-800 p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Gasto</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Lançado</span>
                     <p class="text-sm sm:text-xl md:text-2xl font-black text-amber-600 dark:text-amber-400 mt-1 truncate" id="metricSpent">R$ 0,00</p>
                     <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
                         <div id="barSpent" class="bg-amber-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
@@ -282,14 +365,14 @@
                 </div>
             </div>
 
-            <!-- Controle do Contrato Jackson -->
+            <!-- Controle do Contrato Jackson (Fornecedor Jackson) -->
             <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 space-y-3.5">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1.5 border-b border-slate-100 dark:border-slate-700 pb-3">
                     <div>
                         <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                            <span>🏗️ Jackson (Mão de Obra)</span>
+                            <span>🏗️ Contrato Mão de Obra (Fornecedor Jackson)</span>
                         </h3>
-                        <p class="text-[11px] text-slate-400">Teto Contratual: R$ 60.000,00</p>
+                        <p class="text-[11px] text-slate-400">Teto Contratual Exclusivo Jackson: R$ 60.000,00</p>
                     </div>
                     <span id="jacksonStatusBadge" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-700">Carregando...</span>
                 </div>
@@ -324,162 +407,87 @@
                 </div>
             </div>
 
-            <!-- Formulários e Gráficos -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-                
-                <!-- Formulário de Despesa -->
-                <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 h-fit" id="formContainer">
-                    <h2 id="formTitle" class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 mb-3 flex items-center gap-2">
-                        <span>📝 Registrar Despesa</span>
-                    </h2>
-                    <form id="expenseForm" onsubmit="addExpense(event)" class="space-y-3.5">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Descrição</label>
-                            <input type="text" id="desc" placeholder="Ex: Cimento, Pintor, Pia..." required class="w-full min-h-[44px] px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Valor (R$)</label>
-                                <input type="number" step="0.01" id="val" placeholder="0.00" required class="w-full min-h-[44px] px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Vencimento</label>
-                                <input type="date" id="dueDate" required class="w-full min-h-[44px] px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Fornecedor / Responsável</label>
-                                <input type="text" id="supplier" placeholder="Ex: Jackson, Leroy..." required class="w-full min-h-[44px] px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Categoria</label>
-                                <select id="category" required class="w-full min-h-[44px] px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100">
-                                    <!-- Preenchido dinamicamente -->
-                                </select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Observações</label>
-                            <textarea id="observations" rows="2" placeholder="Notas adicionais sobre a compra..." class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100"></textarea>
-                        </div>
-
-                        <!-- Configurações de Pagamento -->
-                        <div class="bg-slate-50 dark:bg-slate-800/80 p-3 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Status</label>
-                                    <select id="status" required class="w-full min-h-[42px] px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
-                                        <option value="" disabled selected>Selecione...</option>
-                                        <option value="Pago">🟢 Pago (Liquidado)</option>
-                                        <option value="Pendente">🔴 Pendente (A Pagar)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Forma de Pagto</label>
-                                    <select id="payMethod" required onchange="toggleInstallments()" class="w-full min-h-[42px] px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
-                                        <option value="" disabled selected>Selecione...</option>
-                                        <option value="PIX">PIX / Transferência</option>
-                                        <option value="Dinheiro">Dinheiro</option>
-                                        <option value="Cartão de Crédito">Cartão de Crédito</option>
-                                        <option value="Boleto">Boleto Bancário</option>
-                                        <option value="Cheque">Cheque</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center pt-1">
-                                <label class="inline-flex items-center cursor-pointer text-xs font-bold uppercase text-slate-600 dark:text-slate-300 py-1">
-                                    <input type="checkbox" id="isInstallment" onchange="toggleInstallments()" class="rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500 h-5 w-5 mr-2">
-                                    É compra parcelada?
-                                </label>
-                            </div>
-
-                            <div id="installmentConfig" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-200 dark:border-slate-700">
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Qtd Parcelas</label>
-                                    <input type="number" id="installmentsCount" min="2" max="120" value="2" class="w-full min-h-[42px] px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Método</label>
-                                    <select id="installmentMethod" class="w-full min-h-[42px] px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
-                                        <option value="" disabled selected>Selecione...</option>
-                                        <option value="Cartão de Crédito">Cartão de Crédito</option>
-                                        <option value="Boleto">Boleto Bancário</option>
-                                        <option value="Carnê">Carnê/Promissória</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-col sm:flex-row gap-2 pt-1">
-                            <button type="submit" id="submitBtn" class="w-full min-h-[48px] bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-3 px-4 rounded-xl transition shadow text-sm flex items-center justify-center gap-1.5">
-                                <span>Salvar no Sistema</span> 💾
-                            </button>
-                            <button type="button" id="cancelEditBtn" onclick="cancelEdit()" class="hidden w-full sm:w-auto min-h-[48px] bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 active:scale-[0.98] text-slate-700 dark:text-slate-200 font-bold py-3 px-4 rounded-xl transition text-sm">
-                                Cancelar
-                            </button>
-                        </div>
-                    </form>
+            <!-- Gráfico de Distribuição Financeira -->
+            <div id="chartsContainer" class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div>
+                        <h2 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                            <span>📊 Distribuição de Custos</span>
+                        </h2>
+                        <p class="text-[11px] text-slate-400">Visualização proporcional dos investimentos</p>
+                    </div>
+                    <div class="flex bg-slate-100 dark:bg-slate-700 p-1 rounded-xl w-full sm:w-auto">
+                        <button id="btnChartCategory" onclick="setChartViewMode('category')" class="flex-1 sm:flex-none min-h-[36px] px-3.5 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white shadow transition">
+                            Categorias
+                        </button>
+                        <button id="btnChartSupplier" onclick="setChartViewMode('supplier')" class="flex-1 sm:flex-none min-h-[36px] px-3.5 py-1.5 text-xs font-bold rounded-lg bg-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition">
+                            Fornecedores
+                        </button>
+                    </div>
                 </div>
-
-                <!-- Gráficos de Custos -->
-                <div id="chartsContainer" class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 lg:col-span-2 flex flex-col justify-between">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                        <div>
-                            <h2 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                                <span>📊 Distribuição Financeira</span>
-                            </h2>
-                            <p class="text-[11px] text-slate-400">Custos totais por segmento (detalhado)</p>
-                        </div>
-                        <div class="flex bg-slate-100 dark:bg-slate-700 p-1 rounded-xl w-full sm:w-auto">
-                            <button id="btnChartCategory" onclick="setChartViewMode('category')" class="flex-1 sm:flex-none min-h-[36px] px-3.5 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white shadow transition">
-                                Categorias
-                            </button>
-                            <button id="btnChartSupplier" onclick="setChartViewMode('supplier')" class="flex-1 sm:flex-none min-h-[36px] px-3.5 py-1.5 text-xs font-bold rounded-lg bg-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition">
-                                Fornecedores
-                            </button>
-                        </div>
-                    </div>
-                    <div class="relative w-full h-64 sm:h-72 flex justify-center items-center my-auto pt-3">
-                        <canvas id="categoryChart"></canvas>
-                    </div>
+                <div class="relative w-full h-64 sm:h-72 flex justify-center items-center my-auto pt-3">
+                    <canvas id="categoryChart"></canvas>
                 </div>
             </div>
 
-            <!-- Extrato de Lançamentos -->
+            <!-- Extrato de Lançamentos com Filtro de Fornecedor -->
             <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
-                <div class="p-3.5 sm:px-6 sm:py-4 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
-                    <h2 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                        <span>📋 Extrato de Lançamentos</span>
-                    </h2>
-                    <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                        <div class="flex items-center gap-1.5 flex-1 sm:flex-initial">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap hidden sm:inline">Ordem:</span>
-                            <select id="sortSelector" onchange="changeSortMode(this.value)" class="w-full sm:w-auto min-h-[38px] px-2.5 py-1.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs focus:outline-none text-slate-800 dark:text-slate-100 font-semibold">
+                <div class="p-3.5 sm:px-6 sm:py-4 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-700 space-y-3">
+                    <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+                        <div>
+                            <h2 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                                <span>📋 Extrato de Lançamentos</span>
+                            </h2>
+                            <p class="text-[11px] text-slate-400" id="extratoSubtext">Consultas detalhadas e controle de pagamentos</p>
+                        </div>
+                        
+                        <!-- Botões de Ação do Extrato -->
+                        <div class="flex items-center gap-2 justify-end">
+                            <button id="btnAddNewInExtrato" onclick="openExpenseModal()" class="min-h-[38px] text-xs bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-3.5 py-1.5 rounded-xl font-bold transition shadow flex items-center gap-1.5">
+                                <span>➕</span> <span>Adicionar</span>
+                            </button>
+                            <button id="clearDataBtn" onclick="clearAllData()" class="min-h-[38px] text-xs bg-red-50 dark:bg-red-950/40 hover:bg-red-100 active:scale-95 text-red-600 dark:text-red-300 px-3 py-1.5 rounded-xl font-bold transition border border-red-200/50">
+                                Limpar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Linha de Filtros -->
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 pt-2 border-t border-slate-200/70 dark:border-slate-700/60 items-center">
+                        <!-- Filtro por Fornecedor -->
+                        <div class="sm:col-span-5 flex items-center gap-1.5">
+                            <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 whitespace-nowrap">Fornecedor:</label>
+                            <select id="supplierFilter" onchange="changeSupplierFilter(this.value)" class="w-full min-h-[38px] px-3 py-1.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100 font-semibold truncate">
+                                <option value="ALL">🏢 Todos os Fornecedores</option>
+                            </select>
+                        </div>
+
+                        <!-- Ordenação -->
+                        <div class="sm:col-span-4 flex items-center gap-1.5">
+                            <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 whitespace-nowrap">Ordem:</label>
+                            <select id="sortSelector" onchange="changeSortMode(this.value)" class="w-full min-h-[38px] px-3 py-1.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100 font-semibold truncate">
                                 <option value="date_asc">🗓️ Vencimento (Próximos)</option>
                                 <option value="date_desc">🗓️ Vencimento (Distantes)</option>
                                 <option value="val_desc">💰 Maior Valor</option>
                                 <option value="val_asc">💰 Menor Valor</option>
                             </select>
                         </div>
-                        <button id="clearDataBtn" onclick="clearAllData()" class="min-h-[38px] text-xs bg-red-50 dark:bg-red-950/40 hover:bg-red-100 active:scale-95 text-red-600 dark:text-red-300 px-3 py-1.5 rounded-xl font-bold transition border border-red-200/50 whitespace-nowrap">
-                            Limpar
-                        </button>
+
+                        <!-- Resumo dos Filtrados -->
+                        <div class="sm:col-span-3 text-left sm:text-right">
+                            <span id="filteredSummaryBadge" class="inline-block text-[11px] font-extrabold px-3 py-1 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 truncate max-w-full">
+                                Total: R$ 0,00
+                            </span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 1. Visualização Mobile: Cards Touch-Friendly Sem Rolagem Horizontal -->
-                <div id="expenseMobileList" class="block md:hidden divide-y divide-slate-100 dark:divide-slate-700/60 p-2.5 space-y-2.5">
-                    <!-- Cards móveis otimizados injetados aqui -->
-                </div>
+                <!-- Visualização Mobile: Cards -->
+                <div id="expenseMobileList" class="block md:hidden divide-y divide-slate-100 dark:divide-slate-700/60 p-2.5 space-y-2.5"></div>
 
-                <!-- 2. Visualização Desktop: Tabela Tradicional -->
+                <!-- Visualização Desktop: Tabela -->
                 <div class="hidden md:block overflow-x-auto">
-                    <table class="w-full text-left border-collapse min-w-[700px]">
+                    <table class="w-full text-left border-collapse min-w-[760px]">
                         <thead>
                             <tr class="bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-wider">
                                 <th class="px-4 py-3 font-semibold">Reg.</th>
@@ -492,37 +500,273 @@
                                 <th class="px-4 py-3 font-semibold text-center actions-col-header">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="expenseTableBody" class="divide-y divide-slate-100 dark:divide-slate-700 text-xs">
-                            <!-- Injetado via JS -->
-                        </tbody>
+                        <tbody id="expenseTableBody" class="divide-y divide-slate-100 dark:divide-slate-700 text-xs"></tbody>
                     </table>
                 </div>
                 
                 <div id="emptyState" class="p-8 sm:p-12 text-center text-slate-400 dark:text-slate-500 hidden">
                     <span class="text-3xl block mb-2">📭</span>
-                    <p class="text-xs sm:text-sm font-medium">Nenhuma despesa encontrada. Registre um item no formulário acima!</p>
+                    <p class="text-xs sm:text-sm font-medium">Nenhum lançamento encontrado para os critérios selecionados.</p>
                 </div>
             </div>
         </main>
     </div>
 
+    <!-- MODAL DE CADASTRO E EDIÇÃO OTIMIZADO -->
+    <div id="expenseModal" class="hidden fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="relative bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-3xl shadow-2xl max-w-xl w-full border border-slate-100 dark:border-slate-700 my-auto overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            
+            <div class="px-5 py-4 bg-slate-50 dark:bg-slate-800/90 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <h3 id="modalTitle" class="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                    <span>📝 Novo Registro de Despesa</span>
+                </h3>
+                <button onclick="closeExpenseModal()" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-200 font-black flex items-center justify-center transition">
+                    ✕
+                </button>
+            </div>
+
+            <form id="expenseModalForm" onsubmit="saveExpenseFromModal(event)" class="p-5 space-y-4 max-h-[80vh] overflow-y-auto">
+                <input type="hidden" id="modalExpenseId" value="">
+
+                <!-- Grupo 1: Identificação Básica -->
+                <div class="space-y-3">
+                    <h4 class="text-[11px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                        <span>🏷️</span> Identificação do Lançamento
+                    </h4>
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
+                            Descrição do Item ou Serviço <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="mDesc" required placeholder="Ex: Cimento CP-II, Pintura Suíte, Pia Granito..." class="w-full min-h-[44px] px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
+                                Fornecedor / Responsável <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="mSupplier" required placeholder="Ex: Jackson, Leroy Merlin, Depósito..." class="w-full min-h-[44px] px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
+                                Categoria <span class="text-red-500">*</span>
+                            </label>
+                            <select id="mCategory" required class="w-full min-h-[44px] px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grupo 2: Valores e Datas -->
+                <div class="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-700">
+                    <h4 class="text-[11px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                        <span>💰</span> Valores e Prazos
+                    </h4>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
+                                Valor Total (R$) <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" step="0.01" id="mVal" required placeholder="0.00" class="w-full min-h-[44px] px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
+                                Data de Vencimento <span class="text-red-500">*</span>
+                            </label>
+                            <input type="date" id="mDueDate" required class="w-full min-h-[44px] px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grupo 3: Condições de Pagamento e Status -->
+                <div class="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-700">
+                    <h4 class="text-[11px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                        <span>💳</span> Condição Financeira
+                    </h4>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
+                                Status de Pagamento <span class="text-red-500">*</span>
+                            </label>
+                            <select id="mStatus" required class="w-full min-h-[44px] px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                <option value="Pendente">🔴 Pendente (A Pagar)</option>
+                                <option value="Pago">🟢 Pago (Liquidado)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
+                                Forma de Pagamento <span class="text-red-500">*</span>
+                            </label>
+                            <select id="mPayMethod" required class="w-full min-h-[44px] px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                <option value="PIX">PIX / Transferência</option>
+                                <option value="Dinheiro">Dinheiro</option>
+                                <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                <option value="Boleto">Boleto Bancário</option>
+                                <option value="Cheque">Cheque</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="mInstallmentWrapper" class="pt-1">
+                        <label class="inline-flex items-center cursor-pointer text-xs font-bold text-slate-700 dark:text-slate-300 py-1">
+                            <input type="checkbox" id="mIsInstallment" onchange="toggleModalInstallments()" class="rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500 h-5 w-5 mr-2">
+                            Compra parcelada em várias vezes?
+                        </label>
+                        
+                        <div id="mInstallmentFields" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Qtd Parcelas</label>
+                                <input type="number" id="mInstallmentCount" min="2" max="120" value="2" class="w-full min-h-[40px] px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Método Parcelado</label>
+                                <select id="mInstallmentMethod" class="w-full min-h-[40px] px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm">
+                                    <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                    <option value="Boleto">Boleto Bancário</option>
+                                    <option value="Carnê">Carnê / Promissória</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grupo 4: Observações -->
+                <div class="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-700">
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300">Observações Adicionais</label>
+                    <textarea id="mObservations" rows="2" placeholder="Local de aplicação, especificações técnicas, garantias..." class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+                </div>
+
+                <!-- Botões de Ação do Modal -->
+                <div class="flex flex-col-reverse sm:flex-row justify-between items-center gap-2 pt-3 border-t border-slate-100 dark:border-slate-700">
+                    <button type="button" id="mDeleteBtn" onclick="deleteFromModal()" class="hidden w-full sm:w-auto min-h-[46px] px-4 py-2.5 rounded-xl bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300 hover:bg-red-100 text-xs font-bold transition border border-red-200/50">
+                        🗑️ Excluir Registro
+                    </button>
+                    <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                        <button type="button" onclick="closeExpenseModal()" class="w-full sm:w-auto min-h-[46px] px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-bold transition">
+                            Cancelar
+                        </button>
+                        <button type="submit" id="mSubmitBtn" class="w-full sm:w-auto min-h-[46px] px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-bold transition shadow-md flex items-center justify-center gap-1.5">
+                            <span>Salvar Lançamento</span> 💾
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL DE HISTÓRICO DE ATUALIZAÇÕES (EXCLUSIVO CARLOS / MASTER) -->
+    <div id="auditLogModal" class="hidden fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+        <div class="relative bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-3xl shadow-2xl max-w-4xl w-full border border-slate-200 dark:border-slate-700 my-auto flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            
+            <!-- Header do Modal -->
+            <div class="px-5 py-4 bg-slate-50 dark:bg-slate-800/90 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-xl">📜</span>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-black text-slate-800 dark:text-slate-100">Histórico de Atualizações do Sistema (Administrador)</h3>
+                        <p class="text-[11px] text-slate-400">Trilha centralizada de auditoria das operações financeiras e cadastrais</p>
+                    </div>
+                </div>
+                <button onclick="closeAuditModal()" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-200 font-black flex items-center justify-center transition">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Barra de Filtros do Histórico -->
+            <div class="p-4 bg-slate-100/60 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700/80 space-y-3 shrink-0 text-xs">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
+                    <div>
+                        <label class="block font-bold text-slate-500 dark:text-slate-400 text-[10px] uppercase mb-1">Filtrar por Usuário</label>
+                        <select id="auditFilterUser" onchange="filterAuditLogs()" class="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="ALL">👥 Todos os Usuários</option>
+                            <option value="Carlos">Carlos</option>
+                            <option value="Bruna">Bruna</option>
+                            <option value="Jackson">Jackson</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-500 dark:text-slate-400 text-[10px] uppercase mb-1">Tipo de Operação</label>
+                        <select id="auditFilterType" onchange="filterAuditLogs()" class="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="ALL">⚡ Todas as Operações</option>
+                            <option value="INCLUSAO">🟢 Inclusão</option>
+                            <option value="EDICAO">🔵 Edição</option>
+                            <option value="STATUS">🟡 Alteração de Status</option>
+                            <option value="EXCLUSAO">🔴 Exclusão</option>
+                            <option value="CONFIG">⚙️ Configurações</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-500 dark:text-slate-400 text-[10px] uppercase mb-1">Período De</label>
+                        <input type="date" id="auditFilterDateStart" onchange="filterAuditLogs()" class="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-500 dark:text-slate-400 text-[10px] uppercase mb-1">Período Até</label>
+                        <input type="date" id="auditFilterDateEnd" onchange="filterAuditLogs()" class="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-2 pt-1">
+                    <span id="auditCountBadge" class="text-[11px] font-bold text-slate-500 dark:text-slate-400">0 evento(s) encontrado(s)</span>
+                    <button onclick="resetAuditFilters()" class="text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline font-bold">Limpar Filtros</button>
+                </div>
+            </div>
+
+            <!-- Lista de Atividades do Histórico -->
+            <div id="auditLogList" class="p-4 sm:p-5 overflow-y-auto space-y-3 flex-1 divide-y divide-slate-100 dark:divide-slate-700/60">
+                <!-- Inserido dinamicamente via JS -->
+            </div>
+
+            <!-- Footer Informativo -->
+            <div class="p-3 bg-slate-50 dark:bg-slate-900/70 border-t border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 gap-2 shrink-0">
+                <span class="flex items-center gap-1.5">
+                    <span>🛡️</span> Registros protegidos contra edição manual. Visível exclusivamente para Carlos (Master).
+                </span>
+                <span class="text-[10px] text-slate-400 italic">
+                    Modificações de lançamentos têm suas descrições preservadas e detalhes centralizados nesta trilha.
+                </span>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // URL da API integrada nativamente no código
+        // Endpoint Google Sheets Integrado
         const DEFAULT_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwdQll4FXuyslPmphXgOKgeJCHXHwO6j0xMIZZEy4O0s6c-PvFQAk7RXp-jyA1NY64/exec";
 
-        // Estado Geral
+        // Tabela de Credenciais Criptografadas com SHA-256
+        const SECURE_USERS = {
+            'carlos': {
+                role: 'master',
+                displayName: 'Carlos',
+                passHash: 'fc613b4dfd6736a7bd268c8a0e74ed0d1c04a959f59dd74ef2874983fd443fc9'
+            },
+            'bruna': {
+                role: 'standard',
+                displayName: 'Bruna',
+                passHash: '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4'
+            },
+            'jackson': {
+                role: 'jackson',
+                displayName: 'Jackson',
+                passHash: 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3'
+            }
+        };
+
+        // Estado Global da Aplicação
         let state = {
             budget: 60000,
             sheetsUrl: DEFAULT_SHEETS_URL,
             theme: 'light',
             categories: {},
             expenses: [],
-            sortBy: 'date_asc' 
+            auditLog: [],
+            sortBy: 'date_asc',
+            selectedSupplier: 'ALL'
         };
 
         let chartInstance = null;
-        let editingId = null; 
-        let chartViewMode = 'category'; 
+        let chartViewMode = 'category';
 
         // Categorias Padrão
         const defaultCategories = {
@@ -538,39 +782,64 @@
             "Logistica": "Logística e Serviços Gerais"
         };
 
-        // Paleta base de cores
         const baseChartColors = [
-            'rgba(79, 70, 229, 0.85)',   // Indigo
-            'rgba(245, 158, 11, 0.85)',  // Amber
-            'rgba(16, 185, 129, 0.85)',  // Emerald
-            'rgba(6, 182, 212, 0.85)',   // Cyan
-            'rgba(239, 68, 68, 0.85)',   // Vermelho
-            'rgba(236, 72, 153, 0.85)',  // Rosa
-            'rgba(168, 85, 247, 0.85)',  // Roxo
-            'rgba(14, 165, 233, 0.85)',  // Sky
-            'rgba(139, 92, 246, 0.85)',  // Violeta
-            'rgba(100, 116, 139, 0.85)', // Slate
-            'rgba(20, 184, 166, 0.85)',  // Teal
-            'rgba(249, 115, 22, 0.85)',  // Laranja
-            'rgba(217, 70, 239, 0.85)',  // Fuchsia
-            'rgba(132, 204, 22, 0.85)'   // Lime
+            'rgba(79, 70, 229, 0.85)',
+            'rgba(245, 158, 11, 0.85)',
+            'rgba(16, 185, 129, 0.85)',
+            'rgba(6, 182, 212, 0.85)',
+            'rgba(239, 68, 68, 0.85)',
+            'rgba(236, 72, 153, 0.85)',
+            'rgba(168, 85, 247, 0.85)',
+            'rgba(14, 165, 233, 0.85)',
+            'rgba(139, 92, 246, 0.85)',
+            'rgba(100, 116, 139, 0.85)'
         ];
 
-        // Gera cores para quantidade arbitrária de itens sem colisão
         function generateColorPalette(count) {
             const colors = [];
             for (let i = 0; i < count; i++) {
                 if (i < baseChartColors.length) {
                     colors.push(baseChartColors[i]);
                 } else {
-                    const hue = (i * 137.508) % 360; 
+                    const hue = (i * 137.508) % 360;
                     colors.push(`hsla(${hue}, 70%, 55%, 0.85)`);
                 }
             }
             return colors;
         }
 
-        // --- SISTEMA ROBUSTO DE TEMA (CLARO / ESCURO) ---
+        async function computeSHA256(str) {
+            if (window.crypto && crypto.subtle) {
+                const buffer = new TextEncoder().encode(str);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            } else {
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    const char = str.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash |= 0;
+                }
+                return String(hash);
+            }
+        }
+
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (!input) return;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                if (icon) icon.innerText = '🙈';
+            } else {
+                input.type = 'password';
+                if (icon) icon.innerText = '👁️';
+            }
+        }
+
+        // --- SISTEMA DE TEMA ---
         function getSavedTheme() {
             const saved = localStorage.getItem('edifica_theme');
             if (saved === 'dark' || saved === 'light') return saved;
@@ -607,13 +876,11 @@
             showToast(`Tema ${nextTheme === 'dark' ? 'Escuro' : 'Claro'} ativado!`, 'info');
         }
 
-        // --- SISTEMA DE TOAST (NOTIFICAÇÃO VISUAL) ---
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
             if (!container) return;
 
             const toast = document.createElement('div');
-            
             let bgStyles = "bg-emerald-600 text-white shadow-emerald-700/30";
             let icon = "✅";
 
@@ -630,7 +897,6 @@
 
             toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-xl text-xs sm:text-sm font-bold border border-white/10 ${bgStyles} toast-enter`;
             toast.innerHTML = `<span class="text-base">${icon}</span><span class="flex-1">${message}</span>`;
-
             container.appendChild(toast);
 
             setTimeout(() => {
@@ -640,47 +906,268 @@
             }, 3200);
         }
 
-        // --- AUTENTICAÇÃO ---
-        function checkAuth() {
+        function getCurrentUserDisplayName() {
             const loggedUser = localStorage.getItem('edifica_logged_user');
-            if (!loggedUser) {
-                document.getElementById('appContainer').classList.add('hidden');
-                document.getElementById('loginScreen').classList.remove('hidden');
-                return false;
-            } else {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('appContainer').classList.remove('hidden');
-                return true;
+            if (loggedUser === 'master') return 'Carlos';
+            if (loggedUser === 'standard') return 'Bruna';
+            if (loggedUser === 'jackson') return 'Jackson';
+            return 'Usuário';
+        }
+
+        // =========================================================================
+        // MÓDULO DE HISTÓRICO DE AUDITORIA (CENTRALIZADO E EXCLUSIVO DE CARLOS)
+        // =========================================================================
+        function recordAuditLog(type, recordDesc, summary, details = {}) {
+            if (!state.auditLog) state.auditLog = [];
+
+            const user = getCurrentUserDisplayName();
+            const now = new Date();
+            const logEntry = {
+                id: 'log_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+                timestamp: now.toISOString(),
+                formattedDate: now.toLocaleDateString('pt-BR'),
+                formattedTime: now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                user: user,
+                type: type, // 'INCLUSAO' | 'EDICAO' | 'STATUS' | 'EXCLUSAO' | 'CONFIG'
+                recordDesc: recordDesc || 'Lançamento',
+                summary: summary,
+                details: details
+            };
+
+            state.auditLog.unshift(logEntry);
+
+            if (state.auditLog.length > 500) {
+                state.auditLog = state.auditLog.slice(0, 500);
             }
         }
 
-        function handleLogin(e) {
-            e.preventDefault();
-            const user = document.getElementById('loginUser').value.trim().toLowerCase();
-            const pass = document.getElementById('loginPass').value;
-            const errDiv = document.getElementById('loginError');
+        // Acesso restrito ao Histórico: Somente Master (Carlos)
+        function openAuditModal() {
+            const loggedUser = localStorage.getItem('edifica_logged_user');
+            if (loggedUser !== 'master') {
+                showToast("Acesso restrito: apenas o administrador (Carlos) pode visualizar o histórico.", "warning");
+                return;
+            }
+            resetAuditFilters(false);
+            renderAuditLogs();
+            document.getElementById('auditLogModal').classList.remove('hidden');
+        }
 
-            if (user === 'carlos' && pass === 'master') {
-                localStorage.setItem('edifica_logged_user', 'master');
-                errDiv.classList.add('hidden');
-                showToast("Bem-vindo de volta, Carlos!", "info");
-                initAppSession();
-            } else if (user === 'bruna' && pass === '1234') {
-                localStorage.setItem('edifica_logged_user', 'standard');
-                errDiv.classList.add('hidden');
-                showToast("Bem-vinda, Bruna!", "info");
-                initAppSession();
+        function closeAuditModal() {
+            document.getElementById('auditLogModal').classList.add('hidden');
+        }
+
+        function resetAuditFilters(reRender = true) {
+            document.getElementById('auditFilterUser').value = 'ALL';
+            document.getElementById('auditFilterType').value = 'ALL';
+            document.getElementById('auditFilterDateStart').value = '';
+            document.getElementById('auditFilterDateEnd').value = '';
+            if (reRender) filterAuditLogs();
+        }
+
+        function filterAuditLogs() {
+            renderAuditLogs();
+        }
+
+        function renderAuditLogs() {
+            const list = document.getElementById('auditLogList');
+            const countBadge = document.getElementById('auditCountBadge');
+            if (!list) return;
+
+            const filterUser = document.getElementById('auditFilterUser').value;
+            const filterType = document.getElementById('auditFilterType').value;
+            const filterDateStart = document.getElementById('auditFilterDateStart').value;
+            const filterDateEnd = document.getElementById('auditFilterDateEnd').value;
+
+            if (!state.auditLog || state.auditLog.length === 0) {
+                list.innerHTML = `
+                    <div class="p-8 text-center text-slate-400 text-sm">
+                        <span>ℹ️</span> Nenhum registro de atividade encontrado até o momento.
+                    </div>
+                `;
+                countBadge.innerText = '0 evento(s) encontrado(s)';
+                return;
+            }
+
+            const filtered = state.auditLog.filter(log => {
+                if (filterUser !== 'ALL' && log.user !== filterUser) return false;
+                if (filterType !== 'ALL' && log.type !== filterType) return false;
+
+                if (filterDateStart) {
+                    const logDate = log.timestamp.split('T')[0];
+                    if (logDate < filterDateStart) return false;
+                }
+                if (filterDateEnd) {
+                    const logDate = log.timestamp.split('T')[0];
+                    if (logDate > filterDateEnd) return false;
+                }
+                return true;
+            });
+
+            countBadge.innerText = `${filtered.length} evento(s) encontrado(s)`;
+
+            if (filtered.length === 0) {
+                list.innerHTML = `
+                    <div class="p-8 text-center text-slate-400 text-sm">
+                        <span>🔍</span> Nenhuma movimentação corresponde aos filtros selecionados.
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(log => {
+                let badgeClass = '';
+                let typeLabel = '';
+                let typeIcon = '';
+
+                switch (log.type) {
+                    case 'INCLUSAO':
+                        badgeClass = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800';
+                        typeLabel = 'Inclusão';
+                        typeIcon = '➕';
+                        break;
+                    case 'EDICAO':
+                        badgeClass = 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950/70 dark:text-indigo-300 border-indigo-300 dark:border-indigo-800';
+                        typeLabel = 'Edição';
+                        typeIcon = '✏️';
+                        break;
+                    case 'STATUS':
+                        badgeClass = 'bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 border-amber-300 dark:border-amber-800';
+                        typeLabel = 'Status Alterado';
+                        typeIcon = '🔄';
+                        break;
+                    case 'EXCLUSAO':
+                        badgeClass = 'bg-red-100 text-red-800 dark:bg-red-950/70 dark:text-red-300 border-red-300 dark:border-red-800';
+                        typeLabel = 'Exclusão';
+                        typeIcon = '🗑️';
+                        break;
+                    default:
+                        badgeClass = 'bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-200 border-slate-300';
+                        typeLabel = 'Configuração';
+                        typeIcon = '⚙️';
+                }
+
+                let detailsHtml = '';
+                if (log.details && Object.keys(log.details).length > 0) {
+                    detailsHtml = '<div class="mt-2 text-[11px] grid grid-cols-1 sm:grid-cols-2 gap-1.5 p-2 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-700/80">';
+                    for (const [key, val] of Object.entries(log.details)) {
+                        if (val && typeof val === 'object' && ('antes' in val || 'depois' in val)) {
+                            detailsHtml += `
+                                <div class="truncate">
+                                    <span class="font-bold text-slate-500 dark:text-slate-400">${key}:</span>
+                                    <span class="text-red-500 line-through">${val.antes || '—'}</span> ➔ <span class="text-emerald-600 dark:text-emerald-400 font-bold">${val.depois || '—'}</span>
+                                </div>
+                            `;
+                        } else {
+                            detailsHtml += `
+                                <div class="truncate">
+                                    <span class="font-bold text-slate-500 dark:text-slate-400">${key}:</span>
+                                    <span class="text-slate-700 dark:text-slate-300">${val}</span>
+                                </div>
+                            `;
+                        }
+                    }
+                    detailsHtml += '</div>';
+                }
+
+                html += `
+                    <div class="pt-3 pb-2 space-y-1.5 first:pt-0">
+                        <div class="flex flex-wrap items-center justify-between gap-1.5">
+                            <div class="flex items-center gap-2">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${badgeClass}">
+                                    <span>${typeIcon}</span> <span>${typeLabel}</span>
+                                </span>
+                                <span class="font-black text-xs text-slate-800 dark:text-slate-200 truncate max-w-xs sm:max-w-md">${log.recordDesc}</span>
+                            </div>
+                            <div class="text-[10px] text-slate-400 flex items-center gap-1.5">
+                                <span>🗓️ ${log.formattedDate} às ${log.formattedTime}</span>
+                                <span>&bull;</span>
+                                <span class="font-bold text-indigo-600 dark:text-indigo-400">👤 ${log.user}</span>
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-snug">${log.summary}</p>
+                        ${detailsHtml}
+                    </div>
+                `;
+            });
+
+            list.innerHTML = html;
+        }
+
+        // --- CONTROLE DE AUTENTICAÇÃO E PERFIS ---
+        function checkAuth() {
+            const loggedUser = localStorage.getItem('edifica_logged_user');
+            const loginScreen = document.getElementById('loginScreen');
+            const appContainer = document.getElementById('appContainer');
+            const jacksonContainer = document.getElementById('jacksonContainer');
+
+            if (!loggedUser) {
+                loginScreen.classList.remove('hidden');
+                appContainer.classList.add('hidden');
+                jacksonContainer.classList.add('hidden');
+                return false;
+            }
+
+            loginScreen.classList.add('hidden');
+
+            if (loggedUser === 'jackson') {
+                appContainer.classList.add('hidden');
+                jacksonContainer.classList.remove('hidden');
             } else {
+                jacksonContainer.classList.add('hidden');
+                appContainer.classList.remove('hidden');
+            }
+
+            return true;
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const userInput = document.getElementById('loginUser').value.trim().toLowerCase();
+            const passInput = document.getElementById('loginPass').value;
+            const errDiv = document.getElementById('loginError');
+            const submitBtn = document.getElementById('loginSubmitBtn');
+
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-70');
+
+            try {
+                const hash = await computeSHA256(passInput);
+                const userConfig = SECURE_USERS[userInput];
+
+                if (userConfig && userConfig.passHash === hash) {
+                    localStorage.setItem('edifica_logged_user', userConfig.role);
+                    localStorage.setItem('edifica_logged_username', userConfig.displayName);
+                    errDiv.classList.add('hidden');
+                    
+                    recordAuditLog('CONFIG', 'Sessão', `Login efetuado com sucesso por ${userConfig.displayName}`);
+                    showToast(`Bem-vindo, ${userConfig.displayName}!`, "info");
+                    
+                    document.getElementById('loginPass').value = '';
+                    initAppSession();
+                } else {
+                    errDiv.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error("Falha no login:", err);
                 errDiv.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-70');
             }
         }
 
         function logout() {
+            const user = getCurrentUserDisplayName();
+            recordAuditLog('CONFIG', 'Sessão', `Logout efetuado por ${user}`);
             localStorage.removeItem('edifica_logged_user');
+            localStorage.removeItem('edifica_logged_username');
             window.location.reload();
         }
 
-        // --- INICIALIZAÇÃO DA SESSÃO ---
+        // --- SESSÃO E CARREGAMENTO DE DADOS ---
         async function initAppSession() {
             if (!checkAuth()) return;
 
@@ -688,52 +1175,61 @@
             
             const badge = document.getElementById('userBadge');
             if (badge) {
-                badge.innerText = loggedUser === 'master' ? 'Carlos (Master)' : 'Bruna (Leitora)';
+                badge.innerText = loggedUser === 'master' ? 'Carlos (Master)' : (loggedUser === 'jackson' ? 'Jackson (Construtor)' : 'Bruna (Leitora)');
             }
 
+            const isMaster = loggedUser === 'master';
             const settingsBtn = document.getElementById('settingsBtn');
             const importExportBox = document.getElementById('importExportBox');
             const clearDataBtn = document.getElementById('clearDataBtn');
-            
-            if (loggedUser === 'standard') {
-                if (settingsBtn) settingsBtn.classList.add('hidden');
-                if (importExportBox) importExportBox.classList.add('hidden');
-                if (clearDataBtn) clearDataBtn.classList.add('hidden');
-                document.getElementById('settingsPanel').classList.add('hidden');
-            } else {
-                if (settingsBtn) settingsBtn.classList.remove('hidden');
-                if (importExportBox) importExportBox.classList.remove('hidden');
-                if (clearDataBtn) clearDataBtn.classList.remove('hidden');
-            }
+            const btnOpenNewExpense = document.getElementById('btnOpenNewExpense');
+            const btnAddNewInExtrato = document.getElementById('btnAddNewInExtrato');
+            const btnAuditLog = document.getElementById('btnAuditLog');
+
+            if (settingsBtn) settingsBtn.classList.toggle('hidden', !isMaster);
+            if (importExportBox) importExportBox.classList.toggle('hidden', !isMaster);
+            if (clearDataBtn) clearDataBtn.classList.toggle('hidden', !isMaster);
+            if (btnOpenNewExpense) btnOpenNewExpense.classList.toggle('hidden', !isMaster);
+            if (btnAddNewInExtrato) btnAddNewInExtrato.classList.toggle('hidden', !isMaster);
+            // Histórico visível estritamente para Carlos (Master)
+            if (btnAuditLog) btnAuditLog.classList.toggle('hidden', !isMaster);
 
             const saved = localStorage.getItem('edifica_v3_data');
             if (saved) {
-                state = JSON.parse(saved);
-                state.sheetsUrl = DEFAULT_SHEETS_URL;
-                if (!state.categories || Object.keys(state.categories).length === 0) {
-                    state.categories = defaultCategories;
+                try {
+                    const parsed = JSON.parse(saved);
+                    state = { ...state, ...parsed };
+                } catch(e) {
+                    console.error("Erro ao carregar cache local:", e);
                 }
-                if (!state.sortBy) state.sortBy = 'date_asc';
-                document.getElementById('globalBudget').value = state.budget;
-            } else {
-                state.categories = defaultCategories;
-                state.sheetsUrl = DEFAULT_SHEETS_URL;
-                state.expenses = []; 
-                state.sortBy = 'date_asc';
-                saveToStorage();
             }
-            
+
+            if (!state.categories || Object.keys(state.categories).length === 0) {
+                state.categories = defaultCategories;
+            }
+            if (!state.sheetsUrl) state.sheetsUrl = DEFAULT_SHEETS_URL;
+            if (!state.sortBy) state.sortBy = 'date_asc';
+            if (!state.selectedSupplier) state.selectedSupplier = 'ALL';
+            if (!Array.isArray(state.auditLog)) state.auditLog = [];
+
+            document.getElementById('globalBudget').value = state.budget;
             document.getElementById('sheetsUrl').value = state.sheetsUrl;
             document.getElementById('sortSelector').value = state.sortBy;
+
             applyTheme();
-            render();
+
+            if (loggedUser === 'jackson') {
+                renderJacksonView();
+            } else {
+                render();
+            }
 
             if (state.sheetsUrl) {
                 document.getElementById('cloudSyncOverlay').classList.remove('hidden');
                 await loadFromCloud();
                 document.getElementById('cloudSyncOverlay').classList.add('hidden');
             } else {
-                updateCloudStatusIndicator('disconnected', 'Nuvem desligada');
+                updateCloudStatusIndicator('disconnected', 'Nuvem Desligada');
             }
         }
 
@@ -746,33 +1242,585 @@
             document.getElementById('cloudSyncOverlay').classList.add('hidden');
         }
 
-        function toggleSettingsPanel() {
-            const panel = document.getElementById('settingsPanel');
-            panel.classList.toggle('hidden');
-            if (panel.classList.contains('hidden')) {
-                document.getElementById('qrShareContainer').classList.add('hidden');
+        function saveToStorage() {
+            localStorage.setItem('edifica_v3_data', JSON.stringify(state));
+        }
+
+        function updateAndSync() {
+            saveToStorage();
+            const loggedUser = localStorage.getItem('edifica_logged_user');
+            if (loggedUser === 'jackson') {
+                renderJacksonView();
+            } else {
+                render();
+            }
+            if (state.sheetsUrl) {
+                saveToCloud();
             }
         }
 
-        function generateShareQr() {
-            const qrContainer = document.getElementById('qrShareContainer');
-            const qrImg = document.getElementById('qrShareImg');
-            const qrShareLink = document.getElementById('qrShareLink');
-            
-            const baseUrl = window.location.origin + window.location.pathname;
-            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(baseUrl)}`;
-            qrShareLink.value = baseUrl;
-            qrContainer.classList.remove('hidden');
-            
-            const panel = document.getElementById('settingsPanel');
-            if (panel.classList.contains('hidden')) {
-                panel.classList.remove('hidden');
+        // --- CONEXÃO COM GOOGLE SHEETS ---
+        async function loadFromCloud() {
+            const url = state.sheetsUrl ? state.sheetsUrl.trim() : '';
+            if (!url) return;
+
+            updateCloudStatusIndicator('loading', 'Sincronizando...');
+            try {
+                const response = await fetch(url, { method: 'GET', redirect: 'follow' });
+                if (!response.ok) throw new Error('Falha de conexão.');
+
+                const cloudState = await response.json();
+                if (cloudState && typeof cloudState === 'object' && Array.isArray(cloudState.expenses)) {
+                    const currentLocalTheme = getSavedTheme();
+                    const localLogs = state.auditLog || [];
+                    
+                    state = cloudState;
+                    state.theme = currentLocalTheme;
+                    if (!state.sortBy) state.sortBy = 'date_asc';
+                    if (!state.selectedSupplier) state.selectedSupplier = 'ALL';
+                    
+                    if (!Array.isArray(state.auditLog) || state.auditLog.length === 0) {
+                        state.auditLog = localLogs;
+                    }
+
+                    saveToStorage();
+                    applyTheme();
+
+                    const loggedUser = localStorage.getItem('edifica_logged_user');
+                    if (loggedUser === 'jackson') {
+                        renderJacksonView();
+                    } else {
+                        render();
+                    }
+                    updateCloudStatusIndicator('success', 'Conectado');
+                } else {
+                    updateCloudStatusIndicator('empty', 'Nuvem Pronta');
+                }
+            } catch (error) {
+                console.warn("Sincronização em nuvem falhou ou offline:", error);
+                updateCloudStatusIndicator('error', 'Sem conexão');
             }
-            qrContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function saveToCloud() {
+            const url = state.sheetsUrl ? state.sheetsUrl.trim() : '';
+            if (!url) return;
+
+            updateCloudStatusIndicator('loading', 'Salvando...');
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    redirect: 'follow',
+                    body: JSON.stringify(state)
+                });
+                if (!response.ok) throw new Error('Erro ao enviar.');
+                updateCloudStatusIndicator('success', 'Salvo na Nuvem');
+            } catch (error) {
+                console.warn("Falha no salvamento em nuvem:", error);
+                updateCloudStatusIndicator('error', 'Erro ao salvar');
+            }
+        }
+
+        function updateCloudStatusIndicator(status, text) {
+            const badge = document.getElementById('cloudStatusBadge');
+            if (!badge) return;
+            badge.innerText = text || '';
+
+            switch (status) {
+                case 'loading':
+                    badge.className = "text-amber-500 font-bold uppercase text-[10px] animate-pulse";
+                    badge.innerText = "⏳ " + text;
+                    break;
+                case 'success':
+                    badge.className = "text-emerald-600 dark:text-emerald-400 font-bold uppercase text-[10px]";
+                    badge.innerText = "☁️ " + text;
+                    break;
+                case 'error':
+                    badge.className = "text-red-500 font-bold uppercase text-[10px]";
+                    badge.innerText = "⚠️ " + text;
+                    break;
+                case 'disconnected':
+                    badge.className = "text-slate-400 font-bold uppercase text-[10px]";
+                    badge.innerText = "💤 " + text;
+                    break;
+                default:
+                    badge.className = "text-blue-500 font-bold uppercase text-[10px]";
+                    badge.innerText = "ℹ️ " + text;
+            }
+        }
+
+        function formatCurrency(val) {
+            return (val || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function formatDateBR(dateStr) {
+            if (!dateStr) return '';
+            const parts = dateStr.split('-');
+            if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            return dateStr;
+        }
+
+        // =========================================================================
+        // REGRA DE JACKSON: FILTRAR ESTRITAMENTE PELO FORNECEDOR JACKSON
+        // =========================================================================
+        function isJacksonExpense(item) {
+            const supp = (item.supplier || '').toLowerCase().trim();
+            return supp === 'jackson';
+        }
+
+        function populateSupplierFilter() {
+            const select = document.getElementById('supplierFilter');
+            if (!select) return;
+
+            const suppliersSet = new Set();
+            state.expenses.forEach(e => {
+                const s = (e.supplier || '').trim();
+                if (s) suppliersSet.add(s);
+            });
+
+            const sortedSuppliers = Array.from(suppliersSet).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+            const currentSelected = state.selectedSupplier || 'ALL';
+
+            select.innerHTML = '<option value="ALL">🏢 Todos os Fornecedores</option>';
+            sortedSuppliers.forEach(supp => {
+                const opt = document.createElement('option');
+                opt.value = supp;
+                opt.innerText = supp;
+                if (supp === currentSelected) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function changeSupplierFilter(val) {
+            state.selectedSupplier = val;
+            saveToStorage();
+            render();
+        }
+
+        function changeSortMode(mode) {
+            state.sortBy = mode;
+            updateAndSync();
+        }
+
+        // =========================================================================
+        // ALTERAÇÃO DE STATUS: SEM MODIFICAR DESCRIÇÃO, CENTRALIZADO NO HISTÓRICO
+        // =========================================================================
+        async function quickToggleStatus(id, newStatus) {
+            const loggedUser = localStorage.getItem('edifica_logged_user');
+            if (loggedUser !== 'master') {
+                showToast("Apenas o administrador (Carlos) pode alterar o status financeiro.", "warning");
+                render();
+                return;
+            }
+
+            const item = state.expenses.find(x => x.id === id);
+            if (!item) return;
+
+            if (item.status === newStatus) return;
+
+            const confirmMsg = newStatus === 'Pago' 
+                ? `Confirmar a liquidação financeira de "${item.desc}" (${formatCurrency(item.val)}) como PAGO?`
+                : `Reabrir o lançamento "${item.desc}" (${formatCurrency(item.val)}) como PENDENTE de pagamento?`;
+
+            if (item.val >= 1000 || newStatus === 'Pendente') {
+                if (!confirm(confirmMsg)) {
+                    render();
+                    return;
+                }
+            }
+
+            const oldStatus = item.status;
+            item.status = newStatus;
+            item.statusUpdatedAt = new Date().toISOString();
+            item.statusUpdatedBy = getCurrentUserDisplayName();
+
+            recordAuditLog('STATUS', item.desc, `Status de pagamento alterado de "${oldStatus}" para "${newStatus}"`, {
+                'ID': item.id,
+                'Valor': formatCurrency(item.val),
+                'Status': { antes: oldStatus, depois: newStatus }
+            });
+
+            updateAndSync();
+            showToast(`Status de "${item.desc}" atualizado para ${newStatus}!`, 'success');
+        }
+
+        // =========================================================================
+        // PAINEL EXCLUSIVO DO CONSTRUTOR: AJUSTE DO BALÃO DO VALOR A RECEBER
+        // =========================================================================
+        function renderJacksonView() {
+            // Filtragem exclusiva de itens com Fornecedor = Jackson
+            const jacksonItems = state.expenses.filter(isJacksonExpense);
+            const totalContract = 60000;
+            const totalLaunched = jacksonItems.reduce((acc, cur) => acc + cur.val, 0);
+            const totalPaid = jacksonItems.filter(e => e.status === 'Pago').reduce((acc, cur) => acc + cur.val, 0);
+            const totalPending = jacksonItems.filter(e => e.status === 'Pendente').reduce((acc, cur) => acc + cur.val, 0);
+
+            // Ajuste Solicitado: Valor a receber = saldo que falta do contrato todo (Teto - Pago)
+            const contractRemaining = Math.max(0, totalContract - totalPaid);
+            const percent = totalContract > 0 ? (totalLaunched / totalContract) * 100 : 0;
+
+            document.getElementById('jkMetricLaunched').innerText = formatCurrency(totalLaunched);
+            document.getElementById('jkMetricPaid').innerText = formatCurrency(totalPaid);
+            document.getElementById('jkMetricPending').innerText = formatCurrency(contractRemaining);
+            document.getElementById('jkMetricPercent').innerText = `${percent.toFixed(1)}% do teto`;
+
+            const subPendingEl = document.getElementById('jkMetricPendingSub');
+            if (subPendingEl) {
+                subPendingEl.innerText = totalPending > 0 
+                    ? `Falta do contrato (${formatCurrency(totalPending)} em medição)`
+                    : 'Falta do contrato';
+            }
+
+            document.getElementById('jkProgressText').innerText = `${percent.toFixed(1)}% faturado do teto de ${formatCurrency(totalContract)}`;
+            document.getElementById('jkProgressBar').style.width = `${Math.min(percent, 100)}%`;
+
+            document.getElementById('jkItemsCount').innerText = `${jacksonItems.length} registro(s)`;
+
+            const tbody = document.getElementById('jkTableBody');
+            const mobileList = document.getElementById('jkMobileList');
+            const emptyState = document.getElementById('jkEmptyState');
+
+            if (jacksonItems.length === 0) {
+                emptyState.classList.remove('hidden');
+                tbody.innerHTML = '';
+                mobileList.innerHTML = '';
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            const sorted = [...jacksonItems].sort((a,b) => new Date(a.dueDate) - new Date(b.dueDate));
+
+            let tableHtml = '';
+            let cardsHtml = '';
+
+            sorted.forEach(item => {
+                const isPaid = item.status === 'Pago';
+                const statusBadge = isPaid
+                    ? '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">🟢 Liquidado</span>'
+                    : '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300">⏳ A Liberar</span>';
+
+                tableHtml += `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition">
+                        <td class="px-4 py-3 text-slate-400 whitespace-nowrap">${formatDateBR(item.regDate)}</td>
+                        <td class="px-4 py-3 font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap">${formatDateBR(item.dueDate)}</td>
+                        <td class="px-4 py-3">
+                            <div class="font-bold text-slate-800 dark:text-slate-200">${item.desc}</div>
+                            <div class="text-[10px] text-slate-400">${item.installmentText || 'Medição'}</div>
+                        </td>
+                        <td class="px-4 py-3 text-slate-600 dark:text-slate-300">${item.paymentMethod}</td>
+                        <td class="px-4 py-3 text-center">${statusBadge}</td>
+                        <td class="px-4 py-3 text-right font-black text-slate-800 dark:text-slate-200">${formatCurrency(item.val)}</td>
+                    </tr>
+                `;
+
+                cardsHtml += `
+                    <div class="p-3.5 bg-slate-50 dark:bg-slate-800/90 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-2">
+                        <div class="flex justify-between items-start gap-2">
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100">${item.desc}</h4>
+                                <span class="text-[10px] text-slate-400">${item.installmentText || 'Medição'} &bull; Vence em: <strong>${formatDateBR(item.dueDate)}</strong></span>
+                            </div>
+                            <div class="text-right">
+                                <span class="font-black text-sm text-slate-900 dark:text-white block">${formatCurrency(item.val)}</span>
+                                <div class="mt-1">${statusBadge}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            tbody.innerHTML = tableHtml;
+            mobileList.innerHTML = cardsHtml;
+        }
+
+        // =========================================================================
+        // EDIÇÃO E CADASTRO: SEM ADIÇÃO AUTOMÁTICA DE TEXTOS NA DESCRIÇÃO
+        // =========================================================================
+        function openExpenseModal(id = null) {
+            const loggedUser = localStorage.getItem('edifica_logged_user');
+            if (loggedUser !== 'master') {
+                showToast("Apenas o administrador (Carlos) pode criar ou editar lançamentos.", "warning");
+                return;
+            }
+
+            renderModalCategories();
+            const modal = document.getElementById('expenseModal');
+            const title = document.getElementById('modalTitle');
+            const submitBtn = document.getElementById('mSubmitBtn');
+            const deleteBtn = document.getElementById('mDeleteBtn');
+            const form = document.getElementById('expenseModalForm');
+
+            form.reset();
+            document.getElementById('modalExpenseId').value = '';
+            document.getElementById('mIsInstallment').checked = false;
+            toggleModalInstallments();
+
+            if (id) {
+                const item = state.expenses.find(x => x.id === id);
+                if (!item) return;
+
+                document.getElementById('modalExpenseId').value = item.id;
+                document.getElementById('mDesc').value = item.desc;
+                document.getElementById('mSupplier').value = item.supplier;
+                document.getElementById('mCategory').value = item.category;
+                document.getElementById('mVal').value = item.val;
+                document.getElementById('mDueDate').value = item.dueDate;
+                document.getElementById('mStatus').value = item.status;
+                document.getElementById('mPayMethod').value = item.paymentMethod;
+                document.getElementById('mObservations').value = item.observations || '';
+
+                const isInst = item.installmentText && item.installmentText.includes("Parcela");
+                document.getElementById('mIsInstallment').checked = isInst;
+                toggleModalInstallments();
+
+                title.innerHTML = "<span>✏️ Editar Registro de Despesa</span>";
+                submitBtn.innerHTML = "<span>Salvar Alterações</span> 💾";
+                deleteBtn.classList.remove('hidden');
+            } else {
+                title.innerHTML = "<span>📝 Novo Registro de Despesa</span>";
+                submitBtn.innerHTML = "<span>Salvar Lançamento</span> 💾";
+                deleteBtn.classList.add('hidden');
+                document.getElementById('mDueDate').value = new Date().toISOString().split('T')[0];
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeExpenseModal() {
+            document.getElementById('expenseModal').classList.add('hidden');
+        }
+
+        function toggleModalInstallments() {
+            const isInst = document.getElementById('mIsInstallment').checked;
+            const fields = document.getElementById('mInstallmentFields');
+            fields.classList.toggle('hidden', !isInst);
+        }
+
+        function renderModalCategories() {
+            const select = document.getElementById('mCategory');
+            select.innerHTML = '<option value="" disabled selected>Selecione uma Categoria...</option>';
+            Object.entries(state.categories).forEach(([key, val]) => {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.innerText = val;
+                select.appendChild(opt);
+            });
+        }
+
+        async function saveExpenseFromModal(e) {
+            e.preventDefault();
+
+            const editId = document.getElementById('modalExpenseId').value ? parseInt(document.getElementById('modalExpenseId').value) : null;
+            const desc = document.getElementById('mDesc').value.trim();
+            const supplier = document.getElementById('mSupplier').value.trim();
+            const category = document.getElementById('mCategory').value;
+            const totalVal = parseFloat(document.getElementById('mVal').value) || 0;
+            const dueDate = document.getElementById('mDueDate').value;
+            const status = document.getElementById('mStatus').value;
+            const payMethod = document.getElementById('mPayMethod').value;
+            const observations = document.getElementById('mObservations').value.trim();
+            const isInstallment = document.getElementById('mIsInstallment').checked;
+
+            // Bloqueio do Teto Contratual: Aplicado exclusivamente ao Fornecedor Jackson
+            const isJackson = supplier.toLowerCase() === 'jackson';
+            if (isJackson) {
+                const currentJacksonTotal = state.expenses
+                    .filter(item => item.id !== editId && isJacksonExpense(item))
+                    .reduce((sum, item) => sum + item.val, 0);
+
+                const projectedTotal = currentJacksonTotal + totalVal;
+
+                if (projectedTotal > 60000) {
+                    alert(`❌ Limite do Contrato de Jackson Excedido!\n\nVocê já registrou ${formatCurrency(currentJacksonTotal)} para o fornecedor Jackson.\nEste lançamento de ${formatCurrency(totalVal)} ultrapassa o teto de R$ 60.000,00.`);
+                    return;
+                }
+            }
+
+            if (editId) {
+                const index = state.expenses.findIndex(x => x.id === editId);
+                if (index !== -1) {
+                    const original = state.expenses[index];
+                    
+                    const diffDetails = { 'ID': editId };
+                    const changeDescriptions = [];
+
+                    if (original.desc !== desc) {
+                        diffDetails['Descrição'] = { antes: original.desc, depois: desc };
+                        changeDescriptions.push(`Descrição alterada de "${original.desc}" para "${desc}"`);
+                    }
+                    if (original.val !== totalVal) {
+                        diffDetails['Valor'] = { antes: formatCurrency(original.val), depois: formatCurrency(totalVal) };
+                        changeDescriptions.push(`Valor alterado de ${formatCurrency(original.val)} para ${formatCurrency(totalVal)}`);
+                    }
+                    if (original.supplier !== supplier) {
+                        diffDetails['Fornecedor'] = { antes: original.supplier, depois: supplier };
+                        changeDescriptions.push(`Fornecedor alterado de "${original.supplier}" para "${supplier}"`);
+                    }
+                    if (original.category !== category) {
+                        const oldCat = state.categories[original.category] || original.category;
+                        const newCat = state.categories[category] || category;
+                        diffDetails['Categoria'] = { antes: oldCat, depois: newCat };
+                        changeDescriptions.push(`Categoria alterada de "${oldCat}" para "${newCat}"`);
+                    }
+                    if (original.status !== status) {
+                        diffDetails['Status'] = { antes: original.status, depois: status };
+                        changeDescriptions.push(`Status alterado de "${original.status}" para "${status}"`);
+                    }
+                    if (original.dueDate !== dueDate) {
+                        diffDetails['Vencimento'] = { antes: formatDateBR(original.dueDate), depois: formatDateBR(dueDate) };
+                        changeDescriptions.push(`Vencimento alterado para ${formatDateBR(dueDate)}`);
+                    }
+                    if (original.paymentMethod !== payMethod) {
+                        diffDetails['Pagamento'] = { antes: original.paymentMethod, depois: payMethod };
+                        changeDescriptions.push(`Forma de pagamento alterada para "${payMethod}"`);
+                    }
+
+                    state.expenses[index] = {
+                        ...original,
+                        desc: desc,
+                        supplier: supplier,
+                        category: category,
+                        val: totalVal,
+                        dueDate: dueDate,
+                        status: status,
+                        paymentMethod: payMethod,
+                        observations: observations
+                    };
+
+                    const summaryText = changeDescriptions.length > 0 
+                        ? changeDescriptions.join('; ') 
+                        : 'Lançamento atualizado sem alteração de valores';
+
+                    recordAuditLog('EDICAO', desc, summaryText, diffDetails);
+                }
+                showToast(`Despesa "${desc}" atualizada com sucesso!`, 'info');
+            } else {
+                const regDate = new Date().toISOString().split('T')[0];
+
+                if (isInstallment) {
+                    const count = parseInt(document.getElementById('mInstallmentCount').value) || 2;
+                    const instMethod = document.getElementById('mInstallmentMethod').value;
+                    const valuePerInstallment = parseFloat((totalVal / count).toFixed(2));
+                    const diff = parseFloat((totalVal - (valuePerInstallment * count)).toFixed(2));
+                    const baseDate = new Date(dueDate + 'T12:00:00');
+
+                    for (let i = 1; i <= count; i++) {
+                        const installmentDate = new Date(baseDate);
+                        installmentDate.setMonth(baseDate.getMonth() + (i - 1));
+                        const currentVal = (i === count) ? parseFloat((valuePerInstallment + diff).toFixed(2)) : valuePerInstallment;
+                        const itemDesc = `${desc} (${i}/${count})`;
+
+                        const newExpense = {
+                            id: Date.now() + i,
+                            regDate: regDate,
+                            dueDate: installmentDate.toISOString().split('T')[0],
+                            desc: itemDesc,
+                            val: currentVal,
+                            category: category,
+                            supplier: supplier,
+                            paymentMethod: instMethod,
+                            status: status,
+                            installmentText: `Parcela ${i}/${count}`,
+                            observations: observations
+                        };
+                        state.expenses.push(newExpense);
+                    }
+
+                    recordAuditLog('INCLUSAO', desc, `Compra parcelada cadastrada (${count}x de ~${formatCurrency(valuePerInstallment)})`, {
+                        'Valor Total': formatCurrency(totalVal),
+                        'Fornecedor': supplier,
+                        'Parcelas': count
+                    });
+                    showToast(`Compra parcelada registrada (${count} parcelas)!`, 'success');
+                } else {
+                    const newExpense = {
+                        id: Date.now(),
+                        regDate: regDate,
+                        dueDate: dueDate,
+                        desc: desc,
+                        val: totalVal,
+                        category: category,
+                        supplier: supplier,
+                        paymentMethod: payMethod,
+                        status: status,
+                        installmentText: "À vista",
+                        observations: observations
+                    };
+                    state.expenses.push(newExpense);
+
+                    recordAuditLog('INCLUSAO', desc, `Novo lançamento cadastrado: ${formatCurrency(totalVal)}`, {
+                        'ID': newExpense.id,
+                        'Valor': formatCurrency(totalVal),
+                        'Fornecedor': supplier,
+                        'Vencimento': formatDateBR(dueDate)
+                    });
+                    showToast(`Despesa "${desc}" cadastrada com sucesso!`, 'success');
+                }
+            }
+
+            closeExpenseModal();
+            updateAndSync();
+        }
+
+        function deleteFromModal() {
+            const editId = document.getElementById('modalExpenseId').value ? parseInt(document.getElementById('modalExpenseId').value) : null;
+            if (!editId) return;
+
+            const item = state.expenses.find(x => x.id === editId);
+            if (!item) return;
+
+            if (confirm(`Tem certeza de que deseja excluir permanentemente o registro "${item.desc}" no valor de ${formatCurrency(item.val)}?`)) {
+                recordAuditLog('EXCLUSAO', item.desc, `Lançamento excluído no valor de ${formatCurrency(item.val)}`, {
+                    'ID Original': item.id,
+                    'Valor': formatCurrency(item.val),
+                    'Fornecedor': item.supplier
+                });
+
+                state.expenses = state.expenses.filter(x => x.id !== editId);
+                closeExpenseModal();
+                updateAndSync();
+                showToast(`Registro "${item.desc}" excluído com sucesso!`, 'danger');
+            }
+        }
+
+        async function deleteExpenseDirect(id) {
+            const item = state.expenses.find(x => x.id === id);
+            if (!item) return;
+
+            if (confirm(`Excluir permanentemente "${item.desc}"?`)) {
+                recordAuditLog('EXCLUSAO', item.desc, `Lançamento removido (${formatCurrency(item.val)})`, {
+                    'ID': item.id,
+                    'Valor': formatCurrency(item.val),
+                    'Fornecedor': item.supplier
+                });
+
+                state.expenses = state.expenses.filter(x => x.id !== id);
+                updateAndSync();
+                showToast(`"${item.desc}" foi removido!`, 'danger');
+            }
+        }
+
+        async function clearAllData() {
+            if (confirm("⚠️ Confirmar exclusão de TODOS os lançamentos da base de dados local?")) {
+                const count = state.expenses.length;
+                recordAuditLog('EXCLUSAO', 'Base de Lançamentos', `Limpeza total realizada (${count} itens removidos)`);
+                state.expenses = [];
+                updateAndSync();
+                showToast("Todos os lançamentos foram apagados!", "danger");
+            }
+        }
+
+        // --- GESTÃO DE CATEGORIAS E CONFIGURAÇÕES ---
+        function toggleSettingsPanel() {
+            const panel = document.getElementById('settingsPanel');
+            panel.classList.toggle('hidden');
         }
 
         function renderCategorySettings() {
             const container = document.getElementById('categoriesSettingsList');
+            if (!container) return;
             container.innerHTML = '';
             
             Object.entries(state.categories).forEach(([key, val]) => {
@@ -797,30 +1845,370 @@
             state.categories[key] = val;
             input.value = '';
             
+            recordAuditLog('CONFIG', `Categoria: ${val}`, `Nova categoria cadastrada: "${val}"`);
             updateAndSync();
             showToast(`Categoria "${val}" adicionada!`, 'info');
         }
 
         async function deleteCategory(key) {
-            if (confirm("Deseja realmente remover esta categoria?")) {
+            const val = state.categories[key];
+            if (confirm(`Deseja realmente remover a categoria "${val}"?`)) {
+                recordAuditLog('CONFIG', `Categoria: ${val}`, `Categoria "${val}" foi removida.`);
                 delete state.categories[key];
                 updateAndSync();
                 showToast(`Categoria removida!`, 'warning');
             }
         }
 
-        function renderCategorySelect() {
-            const select = document.getElementById('category');
-            select.innerHTML = '<option value="" disabled selected>Selecione uma Categoria...</option>';
+        async function updateBudget(val) {
+            const oldVal = state.budget;
+            const newVal = parseFloat(val) || 0;
+            state.budget = newVal;
             
-            Object.entries(state.categories).forEach(([key, val]) => {
-                const opt = document.createElement('option');
-                opt.value = key;
-                opt.innerText = val;
-                select.appendChild(opt);
+            recordAuditLog('CONFIG', 'Orçamento Global', `Orçamento alterado de ${formatCurrency(oldVal)} para ${formatCurrency(newVal)}`, {
+                'Orçamento': { antes: formatCurrency(oldVal), depois: formatCurrency(newVal) }
             });
+
+            updateAndSync();
+            showToast("Orçamento planejado atualizado!", "info");
         }
 
+        function generateShareQr() {
+            const qrContainer = document.getElementById('qrShareContainer');
+            const qrImg = document.getElementById('qrShareImg');
+            const qrShareLink = document.getElementById('qrShareLink');
+            
+            const baseUrl = window.location.origin + window.location.pathname;
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(baseUrl)}`;
+            qrShareLink.value = baseUrl;
+            qrContainer.classList.remove('hidden');
+            
+            const panel = document.getElementById('settingsPanel');
+            if (panel.classList.contains('hidden')) {
+                panel.classList.remove('hidden');
+            }
+            qrContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- RENDERIZAÇÃO DO PAINEL PRINCIPAL ---
+        function render() {
+            const loggedUser = localStorage.getItem('edifica_logged_user');
+            if (loggedUser === 'jackson') {
+                renderJacksonView();
+                return;
+            }
+
+            const isMaster = loggedUser === 'master';
+
+            populateSupplierFilter();
+            renderCategorySettings();
+
+            const tbody = document.getElementById('expenseTableBody');
+            const mobileList = document.getElementById('expenseMobileList');
+            const emptyState = document.getElementById('emptyState');
+
+            let totalSpentAll = 0;
+            let totalFilteredSpent = 0;
+            let filteredCount = 0;
+
+            const categoryTotals = {};
+            Object.keys(state.categories).forEach(k => { categoryTotals[k] = 0; });
+            const supplierTotals = {};
+
+            const currentFilterSupplier = state.selectedSupplier || 'ALL';
+
+            const sortedExpenses = [...state.expenses];
+            if (state.sortBy === 'date_asc') {
+                sortedExpenses.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+            } else if (state.sortBy === 'date_desc') {
+                sortedExpenses.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
+            } else if (state.sortBy === 'val_desc') {
+                sortedExpenses.sort((a, b) => b.val - a.val);
+            } else if (state.sortBy === 'val_asc') {
+                sortedExpenses.sort((a, b) => a.val - b.val);
+            }
+
+            let rowsHtml = '';
+            let cardsHtml = '';
+
+            sortedExpenses.forEach(item => {
+                totalSpentAll += item.val;
+
+                const catKey = item.category || 'Outros';
+                categoryTotals[catKey] = (categoryTotals[catKey] || 0) + item.val;
+
+                const supp = (item.supplier || 'Não informado').trim();
+                supplierTotals[supp] = (supplierTotals[supp] || 0) + item.val;
+
+                if (currentFilterSupplier !== 'ALL' && supp.toLowerCase() !== currentFilterSupplier.toLowerCase()) {
+                    return;
+                }
+
+                totalFilteredSpent += item.val;
+                filteredCount++;
+
+                const isPaid = item.status === 'Pago';
+                
+                let statusControlDesktop = '';
+                let statusControlMobile = '';
+
+                if (isMaster) {
+                    statusControlDesktop = `
+                        <select onchange="quickToggleStatus(${item.id}, this.value)" class="text-[11px] font-black rounded-full px-2.5 py-1 border transition cursor-pointer shadow-sm ${isPaid ? 'bg-emerald-100 dark:bg-emerald-950/70 border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200' : 'bg-red-100 dark:bg-red-950/70 border-red-300 dark:border-red-700 text-red-800 dark:text-red-200'}">
+                            <option value="Pago" ${isPaid ? 'selected' : ''}>🟢 Pago</option>
+                            <option value="Pendente" ${!isPaid ? 'selected' : ''}>🔴 Pendente</option>
+                        </select>
+                    `;
+                    statusControlMobile = `
+                        <select onchange="quickToggleStatus(${item.id}, this.value)" class="text-xs font-black rounded-xl px-3 py-1.5 border transition cursor-pointer ${isPaid ? 'bg-emerald-100 dark:bg-emerald-950/70 border-emerald-300 text-emerald-800 dark:text-emerald-200' : 'bg-red-100 dark:bg-red-950/70 border-red-300 text-red-800 dark:text-red-200'}">
+                            <option value="Pago" ${isPaid ? 'selected' : ''}>🟢 Pago</option>
+                            <option value="Pendente" ${!isPaid ? 'selected' : ''}>🔴 Pendente</option>
+                        </select>
+                    `;
+                } else {
+                    const badge = isPaid 
+                        ? '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">🟢 Pago</span>'
+                        : '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-300">🔴 Pendente</span>';
+                    statusControlDesktop = badge;
+                    statusControlMobile = badge;
+                }
+
+                const obsDiv = item.observations 
+                    ? `<div class="text-slate-500 dark:text-slate-400 text-[10px] sm:text-xs mt-1.5 italic bg-slate-50 dark:bg-slate-900/40 p-2 rounded-lg border-l-2 border-indigo-500">${item.observations}</div>` 
+                    : '';
+
+                const actionsCell = isMaster ? `
+                    <td class="px-4 py-3 text-center space-x-1 whitespace-nowrap">
+                        <button onclick="openExpenseModal(${item.id})" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 font-bold bg-indigo-50 dark:bg-indigo-950/30 px-2.5 py-1 rounded-lg transition" title="Editar">
+                            ✏️ Editar
+                        </button>
+                        <button onclick="deleteExpenseDirect(${item.id})" class="text-red-500 hover:text-red-700 font-bold bg-red-50 dark:bg-red-950/30 px-2.5 py-1 rounded-lg transition" title="Excluir">
+                            🗑️
+                        </button>
+                    </td>
+                ` : '';
+
+                rowsHtml += `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition border-b border-slate-100 dark:border-slate-700">
+                        <td class="px-4 py-3 text-slate-400 font-medium whitespace-nowrap">${formatDateBR(item.regDate)}</td>
+                        <td class="px-4 py-3 font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap">${formatDateBR(item.dueDate)}</td>
+                        <td class="px-4 py-3 min-w-[150px]">
+                            <div class="font-bold text-slate-800 dark:text-slate-200">${item.desc}</div>
+                            <div class="text-slate-400 text-[10px]">${item.installmentText || 'À vista'}</div>
+                            ${obsDiv}
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="text-slate-700 dark:text-slate-300 font-medium">${state.categories[item.category] || item.category}</div>
+                            <div class="text-slate-400 text-[10px]">Resp: <strong class="text-slate-600 dark:text-slate-300">${item.supplier}</strong></div>
+                        </td>
+                        <td class="px-4 py-3 text-center font-semibold text-slate-600 dark:text-slate-300">${item.paymentMethod}</td>
+                        <td class="px-4 py-3 text-center">${statusControlDesktop}</td>
+                        <td class="px-4 py-3 text-right font-bold text-slate-800 dark:text-slate-200">${formatCurrency(item.val)}</td>
+                        ${actionsCell}
+                    </tr>
+                `;
+
+                const actionsMobile = isMaster ? `
+                    <div class="flex items-center gap-2 pt-2.5 border-t border-slate-100 dark:border-slate-700/70">
+                        <button onclick="openExpenseModal(${item.id})" class="min-h-[42px] flex-1 py-2 px-3 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 active:scale-95 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1">
+                            <span>✏️</span> <span>Editar Registro</span>
+                        </button>
+                        <button onclick="deleteExpenseDirect(${item.id})" class="min-h-[42px] px-3.5 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300 border border-red-200 dark:border-red-900 active:scale-95 rounded-xl text-xs font-bold transition flex items-center justify-center">
+                            <span>🗑️</span>
+                        </button>
+                    </div>
+                ` : '';
+
+                cardsHtml += `
+                    <div class="bg-white dark:bg-slate-800/90 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm space-y-2.5">
+                        <div class="flex justify-between items-start gap-2">
+                            <div class="min-w-0 flex-1">
+                                <h3 class="font-extrabold text-sm sm:text-base text-slate-800 dark:text-slate-100 leading-snug break-words">${item.desc}</h3>
+                                <p class="text-[11px] text-slate-400 mt-0.5">
+                                    Resp: <strong class="text-indigo-600 dark:text-indigo-400">${item.supplier}</strong> &bull; ${state.categories[item.category] || item.category}
+                                </p>
+                            </div>
+                            <div class="text-right shrink-0">
+                                <span class="text-sm sm:text-base font-black text-slate-900 dark:text-white block">${formatCurrency(item.val)}</span>
+                                <div class="mt-1">${statusControlMobile}</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 text-[11px] bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-100 dark:border-slate-700/70">
+                            <div>
+                                <span class="text-slate-400 block text-[9px] uppercase font-bold">Vencimento</span>
+                                <span class="font-bold text-slate-700 dark:text-slate-300 text-xs">${formatDateBR(item.dueDate)}</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-slate-400 block text-[9px] uppercase font-bold">Pagamento</span>
+                                <span class="font-medium text-slate-600 dark:text-slate-300 truncate block">${item.paymentMethod} (${item.installmentText || 'À vista'})</span>
+                            </div>
+                        </div>
+
+                        ${obsDiv}
+                        ${actionsMobile}
+                    </div>
+                `;
+            });
+
+            tbody.innerHTML = rowsHtml;
+            mobileList.innerHTML = cardsHtml;
+
+            const summaryBadge = document.getElementById('filteredSummaryBadge');
+            if (currentFilterSupplier !== 'ALL') {
+                summaryBadge.innerText = `Fornecedor: ${currentFilterSupplier} | ${filteredCount} item(s) | Total: ${formatCurrency(totalFilteredSpent)}`;
+                summaryBadge.classList.add('bg-amber-100', 'text-amber-900', 'border-amber-300');
+            } else {
+                summaryBadge.innerText = `Exibindo Todos (${filteredCount} lançamentos) | Total: ${formatCurrency(totalFilteredSpent)}`;
+                summaryBadge.classList.remove('bg-amber-100', 'text-amber-900', 'border-amber-300');
+            }
+
+            if (filteredCount === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            const remaining = state.budget - totalSpentAll;
+            const percentSpent = state.budget > 0 ? (totalSpentAll / state.budget) * 100 : 0;
+
+            document.getElementById('metricBudget').innerText = formatCurrency(state.budget);
+            document.getElementById('metricSpent').innerText = formatCurrency(totalSpentAll);
+            
+            const remainingEl = document.getElementById('metricRemaining');
+            remainingEl.innerText = formatCurrency(remaining);
+            remainingEl.className = remaining < 0 
+                ? "text-sm sm:text-xl md:text-2xl font-black text-red-600 mt-1 truncate" 
+                : "text-sm sm:text-xl md:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 truncate";
+
+            document.getElementById('metricPercent').innerText = `${percentSpent.toFixed(1)}%`;
+            document.getElementById('barSpent').style.width = `${Math.min(percentSpent, 100)}%`;
+            document.getElementById('barRemaining').style.width = `${Math.max(0, Math.min(100 - percentSpent, 100))}%`;
+            document.getElementById('barPercent').style.width = `${Math.min(percentSpent, 100)}%`;
+
+            processAlerts();
+            renderChart(categoryTotals, supplierTotals);
+            updateJacksonContract();
+        }
+
+        // --- CONTRATO JACKSON (VISUALIZAÇÃO ADMIN RESTRITA AO FORNECEDOR JACKSON) ---
+        function updateJacksonContract() {
+            const jacksonExpenses = state.expenses.filter(isJacksonExpense);
+            const totalJacksonLaunched = jacksonExpenses.reduce((sum, e) => sum + e.val, 0);
+            const totalJacksonPaid = jacksonExpenses.filter(e => e.status === 'Pago').reduce((sum, e) => sum + e.val, 0);
+            const contractLimit = 60000;
+            const jacksonRemaining = contractLimit - totalJacksonLaunched;
+            const usePercentage = Math.min((totalJacksonLaunched / contractLimit) * 100, 100);
+
+            document.getElementById('jacksonLaunched').innerText = formatCurrency(totalJacksonLaunched);
+            document.getElementById('jacksonPaid').innerText = formatCurrency(totalJacksonPaid);
+            
+            const remainingEl = document.getElementById('jacksonRemaining');
+            remainingEl.innerText = formatCurrency(jacksonRemaining);
+            remainingEl.className = jacksonRemaining < 0 
+                ? "text-xs sm:text-sm md:text-base font-extrabold text-red-600 mt-0.5 animate-pulse truncate" 
+                : "text-xs sm:text-sm md:text-base font-extrabold text-indigo-600 dark:text-indigo-400 mt-0.5 truncate";
+
+            document.getElementById('jacksonPercent').innerText = `${((totalJacksonLaunched / contractLimit) * 100).toFixed(1)}%`;
+            
+            const progressBar = document.getElementById('jacksonBar');
+            progressBar.style.width = `${usePercentage}%`;
+            progressBar.className = usePercentage >= 100 
+                ? "bg-red-600 h-full transition-all duration-300" 
+                : (usePercentage >= 85 ? "bg-amber-500 h-full transition-all duration-300" : "bg-indigo-600 h-full transition-all duration-300");
+
+            const badge = document.getElementById('jacksonStatusBadge');
+            if (totalJacksonLaunched === 0) {
+                badge.innerText = "Sem Lançamentos";
+                badge.className = "text-xs font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500";
+            } else if (totalJacksonLaunched > contractLimit) {
+                badge.innerText = "EXCEDIDO ⚠️";
+                badge.className = "text-xs font-bold px-3 py-1 rounded-full bg-red-100 dark:bg-red-950/50 text-red-700 animate-pulse";
+            } else if (totalJacksonLaunched === contractLimit) {
+                badge.innerText = "Esgotado 🛡️";
+                badge.className = "text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700";
+            } else {
+                badge.innerText = "Em Andamento";
+                badge.className = "text-xs font-bold px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300";
+            }
+        }
+
+        // --- CENTRAL DE ALERTAS DE VENCIMENTO ---
+        function processAlerts() {
+            const container = document.getElementById('alertsContainer');
+            const panel = document.getElementById('alertPanel');
+            const totalCountBadge = document.getElementById('alertsTotalCount');
+            const isMaster = localStorage.getItem('edifica_logged_user') === 'master';
+
+            container.innerHTML = '';
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            const pendingItems = state.expenses
+                .filter(item => item.status === 'Pendente')
+                .map(item => {
+                    const dueDate = new Date(item.dueDate + 'T00:00:00');
+                    const diffDays = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+                    return { ...item, diffDays, dueDateObj: dueDate };
+                })
+                .filter(item => item.diffDays <= 15);
+
+            pendingItems.sort((a, b) => a.dueDateObj - b.dueDateObj);
+
+            let alertsHtml = '';
+
+            pendingItems.forEach(item => {
+                let alertMessage = "";
+                let urgencyStyle = "";
+
+                if (item.diffDays < 0) {
+                    alertMessage = `Atrasado há ${Math.abs(item.diffDays)} dia(s)!`;
+                    urgencyStyle = "bg-red-100 dark:bg-red-950/60 border border-red-300 dark:border-red-800 text-red-900 dark:text-red-200 animate-pulse";
+                } else if (item.diffDays === 0) {
+                    alertMessage = "Vence Hoje!";
+                    urgencyStyle = "bg-red-100 dark:bg-red-950/50 border border-red-300 dark:border-red-800 text-red-900 dark:text-red-200";
+                } else if (item.diffDays === 1) {
+                    alertMessage = "Vence Amanhã!";
+                    urgencyStyle = "bg-orange-100 dark:bg-orange-950/50 border border-orange-300 dark:border-orange-800 text-orange-900 dark:text-orange-200";
+                } else {
+                    alertMessage = `Vence em ${item.diffDays} dias`;
+                    urgencyStyle = "bg-amber-100 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200";
+                }
+
+                const payButtonInAlert = isMaster ? `
+                    <button onclick="quickToggleStatus(${item.id}, 'Pago')" class="min-h-[36px] px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold rounded-xl text-[11px] shadow transition flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap">
+                        <span>✔️ Pagar</span>
+                    </button>
+                ` : '';
+
+                alertsHtml += `
+                    <div class="p-3.5 rounded-2xl flex flex-col justify-between ${urgencyStyle}">
+                        <div>
+                            <span class="font-black block text-[10px] uppercase tracking-wider">${alertMessage}</span>
+                            <span class="font-bold text-xs sm:text-sm block truncate mt-0.5">${item.desc}</span>
+                            <span class="block text-[11px] opacity-85 mt-0.5 truncate font-medium">Resp: ${item.supplier || 'N/A'}</span>
+                        </div>
+                        <div class="mt-3 flex items-center justify-between gap-2 border-t border-current/15 pt-2">
+                            <div>
+                                <span class="font-black block text-xs sm:text-sm leading-tight">${formatCurrency(item.val)}</span>
+                                <span class="text-[10px] opacity-80 block">${formatDateBR(item.dueDate)}</span>
+                            </div>
+                            ${payButtonInAlert}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = alertsHtml;
+            if (pendingItems.length > 0) {
+                totalCountBadge.innerText = `${pendingItems.length} conta(s)`;
+                panel.classList.remove('hidden');
+            } else {
+                panel.classList.add('hidden');
+            }
+        }
+
+        // --- GRÁFICOS (CHART.JS) ---
         function setChartViewMode(mode) {
             chartViewMode = mode;
             const btnCat = document.getElementById('btnChartCategory');
@@ -836,240 +2224,67 @@
             render(); 
         }
 
-        function formatDateBR(dateStr) {
-            if (!dateStr) return '';
-            const parts = dateStr.split('-');
-            if (parts.length === 3) {
-                return `${parts[2]}/${parts[1]}/${parts[0]}`;
-            }
-            return dateStr;
-        }
-
-        function saveToStorage() {
-            localStorage.setItem('edifica_v3_data', JSON.stringify(state));
-        }
-
-        function updateAndSync() {
-            saveToStorage();
-            render();
-            if (state.sheetsUrl) {
-                saveToCloud(); 
-            }
-        }
-
-        async function updateBudget(val) {
-            state.budget = parseFloat(val) || 0;
-            updateAndSync();
-            showToast("Orçamento global atualizado!", "info");
-        }
-
-        function toggleInstallments() {
-            const isInstallment = document.getElementById('isInstallment').checked;
-            const configDiv = document.getElementById('installmentConfig');
-            if (isInstallment) {
-                configDiv.classList.remove('hidden');
-                document.getElementById('installmentMethod').setAttribute('required', 'required');
-            } else {
-                configDiv.classList.add('hidden');
-                document.getElementById('installmentMethod').removeAttribute('required');
-            }
-        }
-
-        function changeSortMode(mode) {
-            state.sortBy = mode;
-            updateAndSync();
-        }
-
-        // Marcar como pago com Notificação Visual
-        async function markAsPaid(id) {
-            const item = state.expenses.find(x => x.id === id);
-            if (!item) return;
+        function renderChart(categoryTotals, supplierTotals) {
+            const canvas = document.getElementById('categoryChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
             
-            item.status = 'Pago';
-            updateAndSync();
-            showToast(`Pago com sucesso: "${item.desc}"!`, 'success');
-        }
+            let labels = [];
+            let data = [];
 
-        // Adicionar ou Editar Despesa com Notificação
-        async function addExpense(e) {
-            e.preventDefault();
+            if (chartViewMode === 'category') {
+                labels = Object.keys(categoryTotals).map(k => state.categories[k] || k);
+                data = Object.values(categoryTotals);
+            } else {
+                const sortedSuppliers = Object.entries(supplierTotals)
+                    .filter(([_, val]) => val > 0)
+                    .sort((a,b) => b[1] - a[1]);
 
-            const desc = document.getElementById('desc').value;
-            const totalVal = parseFloat(document.getElementById('val').value) || 0;
-            const initialDueDate = document.getElementById('dueDate').value;
-            const supplier = document.getElementById('supplier').value;
-            const category = document.getElementById('category').value;
-            const observations = document.getElementById('observations').value;
-            const status = document.getElementById('status').value;
-            const isInstallment = document.getElementById('isInstallment').checked;
-
-            // Bloqueio Jackson
-            const isJackson = supplier.trim().toLowerCase() === 'jackson';
-            if (isJackson) {
-                const currentJacksonTotal = state.expenses
-                    .filter(item => item.id !== editingId && item.supplier && item.supplier.trim().toLowerCase() === 'jackson')
-                    .reduce((sum, item) => sum + item.val, 0);
-
-                const projectedTotal = currentJacksonTotal + totalVal;
-
-                if (projectedTotal > 60000) {
-                    alert(`❌ Limite do Contrato de Jackson Excedido!\n\nVocê já registrou R$ ${currentJacksonTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})} para o Jackson.\nEste novo lançamento de R$ ${totalVal.toLocaleString('pt-BR', {minimumFractionDigits: 2})} ultrapassa o limite total de R$ 60.000,00.`);
-                    return;
-                }
+                sortedSuppliers.forEach(([name, val]) => {
+                    labels.push(name);
+                    data.push(val);
+                });
             }
 
-            if (editingId !== null) {
-                // Atualização
-                const index = state.expenses.findIndex(x => x.id === editingId);
-                if (index !== -1) {
-                    const originalRegDate = state.expenses[index].regDate; 
-                    
-                    state.expenses[index] = {
-                        id: editingId,
-                        regDate: originalRegDate,
-                        dueDate: initialDueDate,
-                        desc: desc,
-                        val: totalVal,
-                        category: category,
-                        supplier: supplier,
-                        paymentMethod: isInstallment ? document.getElementById('installmentMethod').value : document.getElementById('payMethod').value,
-                        status: status,
-                        installmentText: isInstallment ? (state.expenses[index].installmentText.includes("Parcela") ? state.expenses[index].installmentText : "Parcela Editada") : "À vista",
-                        observations: observations
-                    };
-                }
-                editingId = null;
-                cancelEdit();
-                showToast(`Despesa "${desc}" atualizada com sucesso!`, 'info');
+            const dynamicPalette = generateColorPalette(labels.length);
+
+            if (chartInstance) {
+                chartInstance.data.labels = labels;
+                chartInstance.data.datasets[0].data = data;
+                chartInstance.data.datasets[0].backgroundColor = dynamicPalette;
+                chartInstance.data.datasets[0].borderColor = getSavedTheme() === 'dark' ? '#1e293b' : '#ffffff';
+                chartInstance.update();
             } else {
-                // Inserção
-                const regDate = new Date().toISOString().split('T')[0];
-
-                if (isInstallment) {
-                    const count = parseInt(document.getElementById('installmentsCount').value) || 2;
-                    const instMethod = document.getElementById('installmentMethod').value;
-                    const valuePerInstallment = parseFloat((totalVal / count).toFixed(2));
-                    const diff = parseFloat((totalVal - (valuePerInstallment * count)).toFixed(2));
-                    const baseDate = new Date(initialDueDate + 'T12:00:00');
-
-                    for (let i = 1; i <= count; i++) {
-                        const installmentDate = new Date(baseDate);
-                        installmentDate.setMonth(baseDate.getMonth() + (i - 1));
-
-                        const currentVal = (i === count) ? parseFloat((valuePerInstallment + diff).toFixed(2)) : valuePerInstallment;
-
-                        state.expenses.push({
-                            id: Date.now() + i,
-                            regDate: regDate,
-                            dueDate: installmentDate.toISOString().split('T')[0],
-                            desc: `${desc} (${i}/${count})`,
-                            val: currentVal,
-                            category: category,
-                            supplier: supplier,
-                            paymentMethod: instMethod,
-                            status: status,
-                            installmentText: `Parcela ${i}/${count}`,
-                            observations: observations
-                        });
+                chartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: dynamicPalette,
+                            borderColor: getSavedTheme() === 'dark' ? '#1e293b' : '#ffffff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    boxWidth: 10,
+                                    font: { size: 10 },
+                                    color: getSavedTheme() === 'dark' ? '#cbd5e1' : '#475569'
+                                }
+                            }
+                        }
                     }
-                    showToast(`Compra parcelada registrada (${count} parcelas)!`, 'success');
-                } else {
-                    const payMethod = document.getElementById('payMethod').value;
-                    state.expenses.push({
-                        id: Date.now(),
-                        regDate: regDate,
-                        dueDate: initialDueDate,
-                        desc: desc,
-                        val: totalVal,
-                        category: category,
-                        supplier: supplier,
-                        paymentMethod: payMethod,
-                        status: status,
-                        installmentText: "À vista",
-                        observations: observations
-                    });
-                    showToast(`Despesa "${desc}" registrada com sucesso!`, 'success');
-                }
-            }
-
-            updateAndSync();
-            resetFormToNeutral();
-        }
-
-        function resetFormToNeutral() {
-            document.getElementById('expenseForm').reset();
-            document.getElementById('category').selectedIndex = 0;
-            document.getElementById('status').selectedIndex = 0;
-            document.getElementById('payMethod').selectedIndex = 0;
-            const instMethodSelect = document.getElementById('installmentMethod');
-            if (instMethodSelect) instMethodSelect.selectedIndex = 0;
-            document.getElementById('dueDate').value = "";
-            document.getElementById('isInstallment').checked = false;
-            toggleInstallments();
-        }
-
-        function editExpense(id) {
-            const item = state.expenses.find(x => x.id === id);
-            if (!item) return;
-
-            editingId = id;
-            document.getElementById('formTitle').innerHTML = "<span>✏️ Editar Lançamento</span>";
-            document.getElementById('submitBtn').innerHTML = "<span>Atualizar Despesa</span> 💾";
-            document.getElementById('cancelEditBtn').classList.remove('hidden');
-
-            document.getElementById('desc').value = item.desc;
-            document.getElementById('val').value = item.val;
-            document.getElementById('supplier').value = item.supplier;
-            document.getElementById('category').value = item.category;
-            document.getElementById('status').value = item.status;
-            document.getElementById('dueDate').value = item.dueDate;
-            document.getElementById('observations').value = item.observations || '';
-
-            const isInstallment = item.installmentText && item.installmentText.includes("Parcela");
-            document.getElementById('isInstallment').checked = isInstallment;
-            toggleInstallments();
-
-            if (isInstallment) {
-                document.getElementById('installmentMethod').value = item.paymentMethod;
-                const matches = item.installmentText.match(/(\d+)\/(\d+)/);
-                if (matches && matches[2]) {
-                    document.getElementById('installmentsCount').value = matches[2];
-                }
-            } else {
-                document.getElementById('payMethod').value = item.paymentMethod;
-            }
-
-            document.getElementById('formContainer').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function cancelEdit() {
-            editingId = null;
-            document.getElementById('formTitle').innerHTML = "<span>📝 Registrar Despesa</span>";
-            document.getElementById('submitBtn').innerHTML = "<span>Salvar no Sistema</span> 💾";
-            document.getElementById('cancelEditBtn').classList.add('hidden');
-            resetFormToNeutral();
-        }
-
-        // Excluir com Notificação
-        async function deleteExpense(id) {
-            const item = state.expenses.find(x => x.id === id);
-            const desc = item ? item.desc : 'Registro';
-
-            if (confirm(`Deseja deletar "${desc}" permanentemente?`)) {
-                state.expenses = state.expenses.filter(x => x.id !== id);
-                updateAndSync();
-                showToast(`"${desc}" foi excluído com sucesso!`, 'danger');
+                });
             }
         }
 
-        async function clearAllData() {
-            if (confirm("Confirmar a exclusão de TODOS os registros locais do sistema?")) {
-                state.expenses = [];
-                updateAndSync();
-                showToast("Todos os registros foram excluídos!", "danger");
-            }
-        }
-
+        // --- IMPORTAÇÃO / EXPORTAÇÃO EXCEL (.XLSX) ---
         function exportToExcel() {
             const dataToExport = state.expenses.map(item => ({
                 "ID": item.id,
@@ -1079,7 +2294,7 @@
                 "Categoria": state.categories[item.category] || item.category,
                 "Fornecedor": item.supplier,
                 "Forma Pagamento": item.paymentMethod,
-                "Parcelamento": item.installmentText,
+                "Parcelamento": item.installmentText || "À vista",
                 "Status": item.status,
                 "Valor (R$)": item.val,
                 "Observações": item.observations || ""
@@ -1135,9 +2350,7 @@
                                 return date.toISOString().split('T')[0];
                             }
                             const parts = String(val).split('/');
-                            if (parts.length === 3) {
-                                return `${parts[2]}-${parts[1]}-${parts[0]}`;
-                            }
+                            if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
                             return String(val);
                         }
 
@@ -1172,508 +2385,18 @@
 
                     if (mappedExpenses.length > 0) {
                         state.expenses = mappedExpenses;
+                        recordAuditLog('INCLUSAO', 'Planilha Excel', `Importação em lote de ${mappedExpenses.length} lançamentos`);
                         updateAndSync();
-                        showToast(`${mappedExpenses.length} registros importados!`, "success");
+                        showToast(`${mappedExpenses.length} lançamentos importados!`, "success");
                     } else {
                         alert("Estrutura não reconhecida na planilha.");
                     }
                 } catch (err) {
                     console.error(err);
-                    alert("Erro ao processar planilha.");
+                    alert("Erro ao ler arquivo Excel.");
                 }
             };
             reader.readAsArrayBuffer(file);
-        }
-
-        // ================= CONEXÃO GOOGLE SHEETS =================
-        async function loadFromCloud() {
-            const url = state.sheetsUrl ? state.sheetsUrl.trim() : '';
-            if (!url) return;
-
-            updateCloudStatusIndicator('loading', 'Sincronizando...');
-            try {
-                const response = await fetch(url, { method: 'GET', redirect: 'follow' });
-                if (!response.ok) throw new Error('Falha de conexão.');
-
-                const cloudState = await response.json();
-                if (cloudState && typeof cloudState === 'object' && Array.isArray(cloudState.expenses)) {
-                    const currentLocalTheme = getSavedTheme();
-                    state = cloudState;
-                    state.theme = currentLocalTheme;
-                    if (!state.sortBy) state.sortBy = 'date_asc';
-                    saveToStorage();
-                    applyTheme();
-                    render();
-                    updateCloudStatusIndicator('success', 'Conectado');
-                } else {
-                    updateCloudStatusIndicator('empty', 'Nuvem Vazia');
-                }
-            } catch (error) {
-                console.error("Erro no download automático:", error);
-                updateCloudStatusIndicator('error', 'Sem conexão');
-            }
-        }
-
-        async function saveToCloud() {
-            const url = state.sheetsUrl ? state.sheetsUrl.trim() : '';
-            if (!url) return;
-
-            updateCloudStatusIndicator('loading', 'Salvando...');
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    redirect: 'follow',
-                    body: JSON.stringify(state)
-                });
-
-                if (!response.ok) throw new Error('Falha no envio.');
-                const result = await response.json();
-                if (result && result.status === 'success') {
-                    updateCloudStatusIndicator('success', 'Nuvem Atualizada');
-                }
-            } catch (error) {
-                console.error("Erro no envio automático:", error);
-                updateCloudStatusIndicator('error', 'Erro ao salvar');
-            }
-        }
-
-        function updateCloudStatusIndicator(status, text) {
-            const badge = document.getElementById('cloudStatusBadge');
-            if (!badge) return;
-
-            badge.innerText = text || '';
-
-            switch (status) {
-                case 'loading':
-                    badge.className = "text-amber-500 font-bold uppercase text-[10px] animate-pulse flex items-center gap-1";
-                    badge.innerHTML = "⏳ " + badge.innerText;
-                    break;
-                case 'success':
-                    badge.className = "text-emerald-600 dark:text-emerald-400 font-bold uppercase text-[10px] flex items-center gap-1";
-                    badge.innerHTML = "☁️ " + badge.innerText;
-                    break;
-                case 'error':
-                    badge.className = "text-red-500 font-bold uppercase text-[10px] flex items-center gap-1";
-                    badge.innerHTML = "⚠️ " + badge.innerText;
-                    break;
-                case 'disconnected':
-                    badge.className = "text-slate-400 font-bold uppercase text-[10px] flex items-center gap-1";
-                    badge.innerHTML = "💤 " + badge.innerText;
-                    break;
-                case 'empty':
-                    badge.className = "text-blue-500 font-bold uppercase text-[10px] flex items-center gap-1";
-                    badge.innerHTML = "ℹ️ " + badge.innerText;
-                    break;
-            }
-        }
-
-        function formatCurrency(val) {
-            return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        }
-
-        function updateJacksonContract() {
-            const jacksonExpenses = state.expenses.filter(e => e.supplier && e.supplier.trim().toLowerCase() === 'jackson');
-            const totalJacksonLaunched = jacksonExpenses.reduce((sum, e) => sum + e.val, 0);
-            const totalJacksonPaid = jacksonExpenses.filter(e => e.status === 'Pago').reduce((sum, e) => sum + e.val, 0);
-            const contractLimit = 60000;
-            const jacksonRemaining = contractLimit - totalJacksonLaunched;
-            const usePercentage = Math.min((totalJacksonLaunched / contractLimit) * 100, 100);
-
-            document.getElementById('jacksonLaunched').innerText = formatCurrency(totalJacksonLaunched);
-            document.getElementById('jacksonPaid').innerText = formatCurrency(totalJacksonPaid);
-            
-            const remainingEl = document.getElementById('jacksonRemaining');
-            remainingEl.innerText = formatCurrency(jacksonRemaining);
-            
-            if (jacksonRemaining < 0) {
-                remainingEl.className = "text-xs sm:text-sm md:text-base font-extrabold text-red-600 mt-0.5 animate-pulse truncate";
-            } else {
-                remainingEl.className = "text-xs sm:text-sm md:text-base font-extrabold text-indigo-600 dark:text-indigo-400 mt-0.5 truncate";
-            }
-
-            document.getElementById('jacksonPercent').innerText = `${((totalJacksonLaunched / contractLimit) * 100).toFixed(1)}%`;
-            
-            const progressBar = document.getElementById('jacksonBar');
-            progressBar.style.width = `${usePercentage}%`;
-            
-            if (usePercentage >= 100) {
-                progressBar.className = "bg-red-600 h-full transition-all duration-300";
-            } else if (usePercentage >= 85) {
-                progressBar.className = "bg-amber-500 h-full transition-all duration-300";
-            } else {
-                progressBar.className = "bg-indigo-600 h-full transition-all duration-300";
-            }
-
-            const badge = document.getElementById('jacksonStatusBadge');
-            if (totalJacksonLaunched === 0) {
-                badge.innerText = "Sem Lançamentos";
-                badge.className = "text-xs font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500";
-            } else if (totalJacksonLaunched > contractLimit) {
-                badge.innerText = "EXCEDIDO ⚠️";
-                badge.className = "text-xs font-bold px-3 py-1 rounded-full bg-red-100 dark:bg-red-950/50 text-red-700 animate-pulse";
-            } else if (totalJacksonLaunched === contractLimit) {
-                badge.innerText = "Esgotado 🛡️";
-                badge.className = "text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700";
-            } else {
-                badge.innerText = "Em Andamento";
-                badge.className = "text-xs font-bold px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300";
-            }
-        }
-
-        // --- RENDER COMPLETO (DESKTOP E MOBILE CARDS) ---
-        function render() {
-            const loggedUser = localStorage.getItem('edifica_logged_user');
-            const isMaster = loggedUser === 'master';
-
-            renderCategorySelect();
-            renderCategorySettings();
-
-            const formContainer = document.getElementById('formContainer');
-            const chartsContainer = document.getElementById('chartsContainer');
-            
-            if (!isMaster) {
-                if (formContainer) formContainer.classList.add('hidden');
-                if (chartsContainer) {
-                    chartsContainer.className = "bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 lg:col-span-3 flex flex-col justify-between";
-                }
-            } else {
-                if (formContainer) formContainer.classList.remove('hidden');
-                if (chartsContainer) {
-                    chartsContainer.className = "bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 lg:col-span-2 flex flex-col justify-between";
-                }
-            }
-
-            const actionsHeader = document.querySelector('.actions-col-header');
-            if (actionsHeader) {
-                if (!isMaster) actionsHeader.classList.add('hidden');
-                else actionsHeader.classList.remove('hidden');
-            }
-
-            document.getElementById('sortSelector').value = state.sortBy || 'date_asc';
-
-            const tbody = document.getElementById('expenseTableBody');
-            const mobileList = document.getElementById('expenseMobileList');
-            
-            let totalSpent = 0;
-            const categoryTotals = {};
-            Object.keys(state.categories).forEach(key => { categoryTotals[key] = 0; });
-            const supplierTotals = {};
-
-            // Ordenação
-            const sortedExpenses = [...state.expenses];
-            const currentSort = state.sortBy || 'date_asc';
-
-            if (currentSort === 'date_asc') {
-                sortedExpenses.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
-            } else if (currentSort === 'date_desc') {
-                sortedExpenses.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
-            } else if (currentSort === 'val_desc') {
-                sortedExpenses.sort((a, b) => b.val - a.val);
-            } else if (currentSort === 'val_asc') {
-                sortedExpenses.sort((a, b) => a.val - b.val);
-            }
-
-            let rowsHtml = '';
-            let cardsHtml = '';
-
-            sortedExpenses.forEach(item => {
-                totalSpent += item.val;
-                
-                if (categoryTotals[item.category] !== undefined) {
-                    categoryTotals[item.category] += item.val;
-                } else {
-                    categoryTotals[item.category] = (categoryTotals[item.category] || 0) + item.val;
-                }
-
-                const suppName = item.supplier ? item.supplier.trim() : "Não Informado";
-                supplierTotals[suppName] = (supplierTotals[suppName] || 0) + item.val;
-
-                const isPaid = item.status === 'Pago';
-                const statusBadge = isPaid 
-                    ? '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">🟢 Pago</span>'
-                    : '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-300">🔴 Pendente</span>';
-
-                const obsDiv = item.observations 
-                    ? `<div class="text-slate-500 dark:text-slate-400 text-[10px] sm:text-xs mt-1.5 italic bg-slate-50 dark:bg-slate-900/40 p-2 rounded-lg border-l-2 border-indigo-500">${item.observations}</div>` 
-                    : '';
-
-                // Ações Desktop
-                const payBtnDesktop = (isMaster && !isPaid) ? `
-                    <button onclick="markAsPaid(${item.id})" class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 font-bold bg-emerald-50 dark:bg-emerald-950/40 px-2 py-1 rounded transition" title="Marcar como Pago">
-                        Pagar ✔️
-                    </button>
-                ` : '';
-
-                const actionsCell = isMaster ? `
-                    <td class="px-4 py-3 text-center space-x-1 whitespace-nowrap">
-                        ${payBtnDesktop}
-                        <button onclick="editExpense(${item.id})" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 font-bold bg-indigo-50 dark:bg-indigo-950/30 px-2 py-1 rounded transition">
-                            Editar
-                        </button>
-                        <button onclick="deleteExpense(${item.id})" class="text-red-500 hover:text-red-700 font-bold bg-red-50 dark:bg-red-950/30 px-2 py-1 rounded transition">
-                            Excluir
-                        </button>
-                    </td>
-                ` : '';
-
-                // 1. Linha da Tabela (Desktop)
-                rowsHtml += `
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition border-b border-slate-100 dark:border-slate-700">
-                        <td class="px-4 py-3 text-slate-400 font-medium whitespace-nowrap">
-                            ${formatDateBR(item.regDate)}
-                        </td>
-                        <td class="px-4 py-3 font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap">
-                            ${formatDateBR(item.dueDate)}
-                        </td>
-                        <td class="px-4 py-3 min-w-[150px]">
-                            <div class="font-bold text-slate-800 dark:text-slate-200">${item.desc}</div>
-                            <div class="text-slate-400 text-[10px]">${item.installmentText || 'À vista'}</div>
-                            ${obsDiv}
-                        </td>
-                        <td class="px-4 py-3">
-                            <div class="text-slate-700 dark:text-slate-300 font-medium">${state.categories[item.category] || item.category}</div>
-                            <div class="text-slate-400 text-[10px]">Resp: ${item.supplier}</div>
-                        </td>
-                        <td class="px-4 py-3 text-center font-semibold text-slate-600 dark:text-slate-300">
-                            ${item.paymentMethod}
-                        </td>
-                        <td class="px-4 py-3 text-center">
-                            ${statusBadge}
-                        </td>
-                        <td class="px-4 py-3 text-right font-bold text-slate-800 dark:text-slate-200">${formatCurrency(item.val)}</td>
-                        ${actionsCell}
-                    </tr>
-                `;
-
-                // 2. Card Mobile Touch-Friendly Totalmente Otimizado
-                const payBtnMobile = (isMaster && !isPaid) ? `
-                    <button onclick="markAsPaid(${item.id})" class="min-h-[44px] flex-1 py-2 px-3 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
-                        <span>✔️</span> <span>Pagar</span>
-                    </button>
-                ` : '';
-
-                const actionsMobile = isMaster ? `
-                    <div class="flex items-center gap-2 pt-2.5 border-t border-slate-100 dark:border-slate-700/70">
-                        ${payBtnMobile}
-                        <button onclick="editExpense(${item.id})" class="min-h-[44px] flex-1 py-2 px-3 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 active:scale-95 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1">
-                            <span>✏️</span> <span>Editar</span>
-                        </button>
-                        <button onclick="deleteExpense(${item.id})" class="min-h-[44px] px-3.5 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300 border border-red-200 dark:border-red-900 active:scale-95 rounded-xl text-xs font-bold transition flex items-center justify-center" aria-label="Excluir Despesa">
-                            <span>🗑️</span>
-                        </button>
-                    </div>
-                ` : '';
-
-                cardsHtml += `
-                    <div class="bg-white dark:bg-slate-800/90 p-3.5 sm:p-4 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm space-y-2.5">
-                        <div class="flex justify-between items-start gap-2">
-                            <div class="min-w-0 flex-1">
-                                <h3 class="font-extrabold text-sm sm:text-base text-slate-800 dark:text-slate-100 leading-snug break-words">${item.desc}</h3>
-                                <p class="text-[11px] text-slate-400 mt-0.5 truncate">
-                                    Resp: <strong class="text-slate-600 dark:text-slate-300">${item.supplier}</strong> &bull; ${state.categories[item.category] || item.category}
-                                </p>
-                            </div>
-                            <div class="text-right shrink-0">
-                                <span class="text-sm sm:text-base font-black text-slate-900 dark:text-white block">${formatCurrency(item.val)}</span>
-                                <div class="mt-1 flex justify-end">${statusBadge}</div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2 text-[11px] bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-100 dark:border-slate-700/70">
-                            <div>
-                                <span class="text-slate-400 block text-[9px] uppercase font-bold">Vencimento</span>
-                                <span class="font-bold text-slate-700 dark:text-slate-300 text-xs">${formatDateBR(item.dueDate)}</span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-slate-400 block text-[9px] uppercase font-bold">Pagamento</span>
-                                <span class="font-medium text-slate-600 dark:text-slate-300 truncate block">${item.paymentMethod} (${item.installmentText || 'À vista'})</span>
-                            </div>
-                        </div>
-
-                        ${obsDiv}
-                        ${actionsMobile}
-                    </div>
-                `;
-            });
-
-            tbody.innerHTML = rowsHtml;
-            mobileList.innerHTML = cardsHtml;
-
-            // Métricas
-            const remaining = state.budget - totalSpent;
-            const percentSpent = state.budget > 0 ? (totalSpent / state.budget) * 100 : 0;
-
-            document.getElementById('metricBudget').innerText = formatCurrency(state.budget);
-            document.getElementById('metricSpent').innerText = formatCurrency(totalSpent);
-            
-            const remainingEl = document.getElementById('metricRemaining');
-            remainingEl.innerText = formatCurrency(remaining);
-            if (remaining < 0) {
-                remainingEl.className = "text-sm sm:text-xl md:text-2xl font-black text-red-600 mt-1 truncate";
-            } else {
-                remainingEl.className = "text-sm sm:text-xl md:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 truncate";
-            }
-
-            document.getElementById('metricPercent').innerText = `${percentSpent.toFixed(1)}%`;
-            document.getElementById('barSpent').style.width = `${Math.min(percentSpent, 100)}%`;
-            document.getElementById('barRemaining').style.width = `${Math.max(0, Math.min(100 - percentSpent, 100))}%`;
-            document.getElementById('barPercent').style.width = `${Math.min(percentSpent, 100)}%`;
-
-            if (state.expenses.length === 0) {
-                document.getElementById('emptyState').classList.remove('hidden');
-            } else {
-                document.getElementById('emptyState').classList.add('hidden');
-            }
-
-            processAlerts();
-            renderChart(categoryTotals, supplierTotals);
-            updateJacksonContract();
-        }
-
-        // --- CENTRAL DE ALERTAS DE VENCIMENTO COM BOTÃO DE PAGAMENTO ---
-        function processAlerts() {
-            const container = document.getElementById('alertsContainer');
-            const panel = document.getElementById('alertPanel');
-            const totalCountBadge = document.getElementById('alertsTotalCount');
-            const loggedUser = localStorage.getItem('edifica_logged_user');
-            const isMaster = loggedUser === 'master';
-
-            container.innerHTML = '';
-
-            const today = new Date();
-            today.setHours(0,0,0,0);
-
-            // Filtra pendências vencidas ou que vencem nos próximos 15 dias
-            const pendingItems = state.expenses
-                .filter(item => item.status === 'Pendente')
-                .map(item => {
-                    const dueDate = new Date(item.dueDate + 'T00:00:00');
-                    const timeDiff = dueDate - today;
-                    const diffDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-                    return { ...item, diffDays, dueDateObj: dueDate };
-                })
-                .filter(item => item.diffDays <= 15);
-
-            // Ordena cronologicamente
-            pendingItems.sort((a, b) => a.dueDateObj - b.dueDateObj);
-
-            let alertsHtml = '';
-
-            pendingItems.forEach(item => {
-                let alertMessage = "";
-                let urgencyStyle = "";
-
-                if (item.diffDays < 0) {
-                    alertMessage = `Atrasado há ${Math.abs(item.diffDays)} dia(s)!`;
-                    urgencyStyle = "bg-red-100 dark:bg-red-950/60 border border-red-300 dark:border-red-800 text-red-900 dark:text-red-200 animate-pulse";
-                } else if (item.diffDays === 0) {
-                    alertMessage = "Vence Hoje!";
-                    urgencyStyle = "bg-red-100 dark:bg-red-950/50 border border-red-300 dark:border-red-800 text-red-900 dark:text-red-200";
-                } else if (item.diffDays === 1) {
-                    alertMessage = "Vence Amanhã!";
-                    urgencyStyle = "bg-orange-100 dark:bg-orange-950/50 border border-orange-300 dark:border-orange-800 text-orange-900 dark:text-orange-200";
-                } else if (item.diffDays > 1 && item.diffDays <= 7) {
-                    alertMessage = `Vence em ${item.diffDays} dias`;
-                    urgencyStyle = "bg-amber-100 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200";
-                } else {
-                    alertMessage = `Vence em ${item.diffDays} dias`;
-                    urgencyStyle = "bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-900/50 text-slate-800 dark:text-slate-300";
-                }
-
-                // Botão de Pagar direto no Card de Alerta com altura acessível
-                const payButtonInAlert = isMaster ? `
-                    <button onclick="markAsPaid(${item.id})" class="min-h-[38px] px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold rounded-xl text-[11px] shadow transition flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap">
-                        <span>✔️ Pagar</span>
-                    </button>
-                ` : '';
-
-                alertsHtml += `
-                    <div class="p-3.5 rounded-2xl flex flex-col justify-between ${urgencyStyle}">
-                        <div>
-                            <span class="font-black block text-[10px] uppercase tracking-wider">${alertMessage}</span>
-                            <span class="font-bold text-xs sm:text-sm block truncate mt-0.5">${item.desc}</span>
-                            <span class="block text-[11px] opacity-85 mt-0.5 truncate font-medium">Resp: ${item.supplier || 'N/A'}</span>
-                        </div>
-                        <div class="mt-3 flex items-center justify-between gap-2 border-t border-current/15 pt-2">
-                            <div>
-                                <span class="font-black block text-xs sm:text-sm leading-tight">${formatCurrency(item.val)}</span>
-                                <span class="text-[10px] opacity-80 block">${formatDateBR(item.dueDate)}</span>
-                            </div>
-                            ${payButtonInAlert}
-                        </div>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = alertsHtml;
-
-            if (pendingItems.length > 0) {
-                totalCountBadge.innerText = `${pendingItems.length} conta(s)`;
-                panel.classList.remove('hidden');
-            } else {
-                panel.classList.add('hidden');
-            }
-        }
-
-        // Gráfico (Com fornecedores desdobrados individualmente)
-        function renderChart(categoryTotals, supplierTotals) {
-            const ctx = document.getElementById('categoryChart').getContext('2d');
-            
-            let labels = [];
-            let data = [];
-
-            if (chartViewMode === 'category') {
-                labels = Object.keys(categoryTotals).map(k => state.categories[k] || k);
-                data = Object.values(categoryTotals);
-            } else {
-                // Desdobra nominalmente todos os fornecedores em ordem decrescente de valor sem agrupar em "Outros"
-                const sortedSuppliers = Object.entries(supplierTotals)
-                    .filter(([_, val]) => val > 0)
-                    .sort((a,b) => b[1] - a[1]);
-
-                sortedSuppliers.forEach(([name, val]) => {
-                    labels.push(name);
-                    data.push(val);
-                });
-            }
-
-            const dynamicPalette = generateColorPalette(labels.length);
-
-            if (chartInstance) {
-                chartInstance.data.labels = labels;
-                chartInstance.data.datasets[0].data = data;
-                chartInstance.data.datasets[0].backgroundColor = dynamicPalette;
-                chartInstance.data.datasets[0].borderColor = getSavedTheme() === 'dark' ? '#1e293b' : '#ffffff';
-                chartInstance.update();
-            } else {
-                chartInstance = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            data: data,
-                            backgroundColor: dynamicPalette,
-                            borderColor: getSavedTheme() === 'dark' ? '#1e293b' : '#ffffff',
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    boxWidth: 10,
-                                    font: { size: 10 },
-                                    color: getSavedTheme() === 'dark' ? '#cbd5e1' : '#475569'
-                                }
-                            }
-                        }
-                    }
-                });
-            }
         }
 
         window.onload = init;
